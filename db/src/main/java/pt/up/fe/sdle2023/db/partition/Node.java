@@ -1,10 +1,8 @@
 package pt.up.fe.sdle2023.db.partition;
 
-import java.nio.ByteBuffer;
 import java.util.UUID;
 
 public class Node implements Comparable<Node> {
-
 
     private final UUID physicalId;
     private final UUID id;
@@ -12,6 +10,10 @@ public class Node implements Comparable<Node> {
     public Node(UUID physicalId, UUID id) {
         this.physicalId = physicalId;
         this.id = id;
+    }
+
+    public UUID getPhysicalId() {
+        return physicalId;
     }
 
     public UUID getId() {

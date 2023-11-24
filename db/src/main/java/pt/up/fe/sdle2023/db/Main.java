@@ -14,8 +14,8 @@ public class Main {
         var options = new Options();
         options.setCreateIfMissing(true);
 
-//        var db = RocksDB.open(options, "db.rocksdb");
-//    db.put("hello".getBytes(Charsets.UTF_8), "world".getBytes());
+    //    var db = RocksDB.open(options, "db.rocksdb");
+    //    db.put("hello".getBytes(Charsets.UTF_8), "world".getBytes());
 
     }
 }

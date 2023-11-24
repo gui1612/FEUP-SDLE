@@ -1,13 +1,13 @@
-package pt.up.fe.sdle2023.db;
+package pt.up.fe.sdle2023.db.storage;
 
 import com.sun.net.httpserver.HttpServer;
+import org.rocksdb.RocksDBException;
+import pt.up.fe.sdle2023.db.storage.DbService;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 public class HttpDbController implements AutoCloseable {
 
@@ -29,11 +29,12 @@ public class HttpDbController implements AutoCloseable {
     }
 
     @Override
-    public void close() {
+    public void close() throws RocksDBException {
         http.stop(10);
+        this.db.close();
     }
 
     private void registerRoutes() {
-        this.http.createContext("/");
+        this.http.createContext("/", new MyHandler(this.db));
     }
 }

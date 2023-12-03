@@ -1,13 +1,14 @@
-package pt.up.fe.sdle2023.db.partition.hashing;
+package pt.up.fe.sdle2023.db.partitioning.hashing;
 
-import pt.up.fe.sdle2023.db.partition.Node;
-import pt.up.fe.sdle2023.db.partition.NodeManager;
+import pt.up.fe.sdle2023.db.identification.DataKey;
+import pt.up.fe.sdle2023.db.identification.StorageNodeID;
+import pt.up.fe.sdle2023.db.identification.VirtualNodeID;
+import pt.up.fe.sdle2023.db.partitioning.Node;
+import pt.up.fe.sdle2023.db.partitioning.NodeManager;
 
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RingNodeManager implements NodeManager {
@@ -30,8 +31,8 @@ public class RingNodeManager implements NodeManager {
     }
 
     @Override
-    public Iterator<Node> findNodesForKey(UUID key) {
-        var marker = new Node(null, key, false);
+    public Iterator<Node> findPreferentialNodesForKey(DataKey key) {
+        var marker = new Node(null, new VirtualNodeID(key.asUUID()), false);
 
         var baseIterator = Stream.concat(
                         nodes.tailSet(marker).stream(), // greater than or equal to marker
@@ -40,19 +41,19 @@ public class RingNodeManager implements NodeManager {
                 .iterator();
 
         return new Iterator<>() {
-            final TreeSet<UUID> seenPhysicalIds = new TreeSet<>();
+            final HashSet<StorageNodeID> seenStorageIds = new HashSet<>();
 
             @Override
             public boolean hasNext() {
-                return seenPhysicalIds.size() < replicationFactor && baseIterator.hasNext();
+                return seenStorageIds.size() < replicationFactor && baseIterator.hasNext();
             }
 
             @Override
             public Node next() {
                 while (hasNext()) {
                     var node = baseIterator.next();
-                    if (!seenPhysicalIds.contains(node.physicalId())) {
-                        seenPhysicalIds.add(node.physicalId());
+                    if (!seenStorageIds.contains(node.storageNodeId())) {
+                        seenStorageIds.add(node.storageNodeId());
                         return node;
                     }
                 }

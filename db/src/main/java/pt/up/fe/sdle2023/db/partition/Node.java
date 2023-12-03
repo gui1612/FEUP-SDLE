@@ -2,23 +2,7 @@ package pt.up.fe.sdle2023.db.partition;
 
 import java.util.UUID;
 
-public class Node implements Comparable<Node> {
-
-    private final UUID physicalId;
-    private final UUID id;
-
-    public Node(UUID physicalId, UUID id) {
-        this.physicalId = physicalId;
-        this.id = id;
-    }
-
-    public UUID getPhysicalId() {
-        return physicalId;
-    }
-
-    public UUID getId() {
-        return id;
-    }
+public record Node(UUID physicalId, UUID id, boolean isLocal) implements Comparable<Node> {
 
     public boolean isSibling(Node other) {
         return this.physicalId.equals(other.physicalId);

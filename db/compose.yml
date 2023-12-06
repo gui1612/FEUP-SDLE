@@ -1,0 +1,35 @@
+version: "3"
+
+configs:
+  cluster-config:
+    file: ./config.yaml
+
+x-cluster-db: &cluster-db
+  build:
+    context: .
+    dockerfile: Dockerfile
+  configs:
+    - cluster-config
+  network_mode: host
+
+services:
+  cluster-db-1:
+    <<: *cluster-db
+    command: start cluster-db-1
+    environment:
+      - PORT=6001
+      - CONFIG_PATH=/cluster-config
+
+  cluster-db-2:
+    <<: *cluster-db
+    command: start cluster-db-2
+    environment:
+      - PORT=6002
+      - CONFIG_PATH=/cluster-config
+
+  cluster-db-3:
+    <<: *cluster-db
+    command: start cluster-db-3
+    environment:
+      - PORT=6003
+      - CONFIG_PATH=/cluster-config

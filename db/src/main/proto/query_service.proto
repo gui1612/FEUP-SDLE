@@ -1,0 +1,15 @@
+syntax = "proto3";
+package query_service;
+option java_package = "pt.up.fe.sdle2023.db.query";
+
+service QueryService {
+    rpc query(QueryGetRequest) returns (QueryGetResponse) {}
+}
+
+message QueryGetRequest {
+    string query = 1;
+}
+
+message QueryGetResponse {
+    string result = 1;
+}

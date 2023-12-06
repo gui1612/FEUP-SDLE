@@ -1,0 +1,9 @@
+cluster:
+  - name: cluster-db-1
+    address: localhost:6001
+
+  - name: cluster-db-2
+    address: localhost:6002
+
+  - name: cluster-db-3
+    address: localhost:6003

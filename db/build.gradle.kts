@@ -23,6 +23,9 @@ dependencies {
     // Dependencies for RocksDB
     implementation("org.rocksdb:rocksdbjni:8.6.7")
 
+    // https://mvnrepository.com/artifact/org.yaml/snakeyaml
+    implementation("org.yaml:snakeyaml:2.2")
+
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }

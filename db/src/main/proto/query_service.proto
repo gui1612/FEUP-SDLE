@@ -1,15 +1,36 @@
 syntax = "proto3";
+import "google/protobuf/empty.proto";
+
 package query_service;
 option java_package = "pt.up.fe.sdle2023.db.query";
 
 service QueryService {
-    rpc query(QueryGetRequest) returns (QueryGetResponse) {}
+    rpc getEntry(QueryGetRequest) returns (QueryGetResponse) {}
+    rpc putEntry(QueryPutRequest) returns (google.protobuf.Empty) {}
+}
+
+message QueryContext {
+    message VectorClockEntry {
+        uint64 uuidMostSignificantBits = 1;
+        uint64 uuidLeastSignificantBits = 2;
+        uint64 version = 3;
+    }
+
+    repeated VectorClockEntry vectorClock = 1;
 }
 
 message QueryGetRequest {
-    string query = 1;
+    string key = 1;
 }
 
 message QueryGetResponse {
-    string result = 1;
+    bytes context = 1;
+    repeated bytes values = 2;
 }
+
+message QueryPutRequest {
+    string key = 1;
+    bytes context = 2;
+    bytes value = 3;
+}
+

@@ -1,14 +1,16 @@
-package pt.up.fe.sdle2023.db.config;
+package pt.up.fe.sdle2023.db.config.data;
 
 public class Node {
 
     private String name;
     private String address;
 
-    /*public Node(String name, String address) {
+    public Node() {}
+
+    public Node(String name, String address) {
         this.name = name;
         this.address = address;
-    }*/
+    }
 
     public String getName() {
         return name;

@@ -1,14 +1,13 @@
 package pt.up.fe.sdle2023.db.partitioning;
 
-import pt.up.fe.sdle2023.db.identification.DataKey;
+import pt.up.fe.sdle2023.db.identification.Token;
 
 import java.util.Iterator;
-import java.util.UUID;
 
 public interface NodeManager {
     void addNode(Node node);
 
     void removeNode(Node node);
 
-    Iterator<Node> findPreferentialNodesForKey(DataKey key);
+    Iterator<Node> findPreferentialNodesForKey(Token key);
 }

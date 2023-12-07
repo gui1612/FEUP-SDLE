@@ -1,12 +1,12 @@
 package pt.up.fe.sdle2023.db.partitioning.hashing;
 
 import pt.up.fe.sdle2023.db.identification.StorageNodeID;
+import pt.up.fe.sdle2023.db.identification.Token;
 import pt.up.fe.sdle2023.db.identification.VirtualNodeID;
 import pt.up.fe.sdle2023.db.partitioning.Node;
 import pt.up.fe.sdle2023.db.partitioning.NodeFactory;
 
 import java.nio.ByteBuffer;
-import java.util.UUID;
 
 /**
  * A node factory that generates nodes with consistent hashing.
@@ -27,11 +27,11 @@ public class ConsistentLocalNodeFactory implements NodeFactory {
     @Override
     public Node createNewNode() {
         ByteBuffer nodeId = ByteBuffer.allocate(3 * Long.BYTES);
-        nodeId.putLong(storageNodeId.asUUID().getMostSignificantBits());
-        nodeId.putLong(storageNodeId.asUUID().getLeastSignificantBits());
+        nodeId.putLong(storageNodeId.asToken().mostSignificantBits());
+        nodeId.putLong(storageNodeId.asToken().leastSignificantBits());
         nodeId.putLong(counter);
 
-        var id = new VirtualNodeID(UUID.nameUUIDFromBytes(nodeId.array()));
+        var id = new VirtualNodeID(Token.digestBytes(nodeId.array()));
         counter++;
 
         return new Node(storageNodeId, id, true);

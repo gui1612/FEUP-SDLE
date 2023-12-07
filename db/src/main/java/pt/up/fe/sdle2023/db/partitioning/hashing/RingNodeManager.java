@@ -1,6 +1,6 @@
 package pt.up.fe.sdle2023.db.partitioning.hashing;
 
-import pt.up.fe.sdle2023.db.identification.DataKey;
+import pt.up.fe.sdle2023.db.identification.Token;
 import pt.up.fe.sdle2023.db.identification.StorageNodeID;
 import pt.up.fe.sdle2023.db.identification.VirtualNodeID;
 import pt.up.fe.sdle2023.db.partitioning.Node;
@@ -31,8 +31,8 @@ public class RingNodeManager implements NodeManager {
     }
 
     @Override
-    public Iterator<Node> findPreferentialNodesForKey(DataKey key) {
-        var marker = new Node(null, new VirtualNodeID(key.asUUID()), false);
+    public Iterator<Node> findPreferentialNodesForKey(Token key) {
+        var marker = new Node(null, new VirtualNodeID(key), false);
 
         var baseIterator = Stream.concat(
                         nodes.tailSet(marker).stream(), // greater than or equal to marker

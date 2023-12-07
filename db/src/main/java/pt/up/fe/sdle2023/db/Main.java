@@ -2,10 +2,10 @@ package pt.up.fe.sdle2023.db;
 
 
 import org.rocksdb.*;
-import pt.up.fe.sdle2023.db.config.Config;
-import pt.up.fe.sdle2023.db.config.Node;
-import pt.up.fe.sdle2023.db.config.io.ConfigReader;
-import pt.up.fe.sdle2023.db.config.io.ConfigWriter;
+import pt.up.fe.sdle2023.db.config.data.Config;
+import pt.up.fe.sdle2023.db.config.data.Node;
+import pt.up.fe.sdle2023.db.config.ConfigReader;
+import pt.up.fe.sdle2023.db.config.ConfigWriter;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -30,18 +30,19 @@ public class Main {
                     var reader = new ConfigReader();
                     var config = reader.read(configPath);
 
-                    System.out.println(config);
-                    System.out.println(instanceName);
+                    var nodeConfig = config.getCluster().stream()
+                            .filter(node -> node.getName().equals(instanceName))
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalArgumentException("No node with name " + instanceName));
+
+                    var server = new Server(nodeConfig);
+                    server.start();
+
                     return;
                 }
             } else if (args[0].equals("init-config")) {
                 var config = new Config();
-
-                var node = new Node();
-                node.setName("example-node");
-                node.setAddress("localhost:8080");
-
-                config.setCluster(List.of(node));
+                config.setCluster(List.of(new Node("example-node", "localhost:8080")));
 
                 var writer = new ConfigWriter();
                 writer.write(configPath, config);

@@ -1,7 +1,7 @@
-package pt.up.fe.sdle2023.db.config.io;
+package pt.up.fe.sdle2023.db.config;
 
 import org.yaml.snakeyaml.Yaml;
-import pt.up.fe.sdle2023.db.config.Config;
+import pt.up.fe.sdle2023.db.config.data.Config;
 
 import java.io.IOException;
 import java.io.PrintWriter;

@@ -3,7 +3,6 @@ import { AWSet } from '../../lib/crdts/AWSet'
 
 suite("AWSet", () => {
     test('constructor', () => {
-        // Add your test code here
         expect(new AWSet('A')).toBeInstanceOf(AWSet)
     })
 

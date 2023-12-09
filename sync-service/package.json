@@ -2,13 +2,13 @@
   "name": "sync-service",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/app.js",
+  "main": "dist/src/app.js",
   "scripts": {
     "build": "tsc",
+    "test": "vitest",
     "start": "node dist/app.js",
     "dev": "concurrently \"tsc --watch\" \"nodemon\"",
-    "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0",
-    "test": "vitest"
+    "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0"
   },
   "keywords": [],
   "author": "",

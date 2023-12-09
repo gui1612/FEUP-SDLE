@@ -26,6 +26,12 @@ class DotContext<K> {
         return this.cc.has(id);
     }
 
+    hasDot(dot: Dot<K>): boolean {
+        const [id, dotId] = dot;
+
+        return this.cc.has(id) && this.cc.get(id) === dotId;
+    }
+
     merge(dc: DotContext<K>): void {
         for (const [key, value] of dc.cc) 
             this.cc.set(key, Math.max(this.cc.get(key) ?? 0, value));

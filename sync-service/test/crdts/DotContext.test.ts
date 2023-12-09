@@ -1,4 +1,3 @@
-// sum.test.js
 import { expect, test, suite } from 'vitest'
 import { DotContext } from '../../lib/crdts/DotContext'
 

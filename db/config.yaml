@@ -1,9 +1,12 @@
 cluster:
   - name: cluster-db-1
-    address: localhost:6001
+    host: localhost
+    port: 6001
 
   - name: cluster-db-2
-    address: localhost:6002
+    host: localhost
+    port: 6002
 
   - name: cluster-db-3
-    address: localhost:6003
+    host: localhost
+    port: 6003

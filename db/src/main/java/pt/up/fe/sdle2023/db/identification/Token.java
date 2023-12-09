@@ -1,6 +1,7 @@
 package pt.up.fe.sdle2023.db.identification;
 
 import com.google.common.base.Charsets;
+import pt.up.fe.sdle2023.db.proto.DatabaseProtos;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
@@ -46,6 +47,10 @@ public record Token(long mostSignificantBits, long leastSignificantBits) impleme
         return new Token(mostSignificantBits, leastSignificantBits);
     }
 
+    public static Token fromTokenProto(DatabaseProtos.Token tokenProto) {
+        return new Token(tokenProto.getMostSignificantBits(), tokenProto.getLeastSignificantBits());
+    }
+
     @Override
     public int compareTo(Token other) {
         var mostSignificantBitsComparison = Long.compareUnsigned(this.mostSignificantBits, other.mostSignificantBits);
@@ -75,5 +80,12 @@ public record Token(long mostSignificantBits, long leastSignificantBits) impleme
                 "mostSignificantBits=" + mostSignificantBits +
                 ", leastSignificantBits=" + leastSignificantBits +
                 '}';
+    }
+
+    public DatabaseProtos.Token toTokenProto() {
+        return DatabaseProtos.Token.newBuilder()
+                .setMostSignificantBits(this.mostSignificantBits)
+                .setLeastSignificantBits(this.leastSignificantBits)
+                .build();
     }
 }

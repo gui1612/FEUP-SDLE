@@ -30,19 +30,14 @@ public class Main {
                     var reader = new ConfigReader();
                     var config = reader.read(configPath);
 
-                    var nodeConfig = config.getCluster().stream()
-                            .filter(node -> node.getName().equals(instanceName))
-                            .findFirst()
-                            .orElseThrow(() -> new IllegalArgumentException("No node with name " + instanceName));
-
-                    var server = new Server(nodeConfig);
+                    var server = new Server(config, instanceName);
                     server.start();
 
                     return;
                 }
             } else if (args[0].equals("init-config")) {
                 var config = new Config();
-                config.setCluster(List.of(new Node("example-node", "localhost:8080")));
+                config.setCluster(List.of(new Node("example-node", "127.0.0.1", 6000)));
 
                 var writer = new ConfigWriter();
                 writer.write(configPath, config);

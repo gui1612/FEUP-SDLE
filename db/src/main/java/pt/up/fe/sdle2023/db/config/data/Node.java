@@ -3,13 +3,15 @@ package pt.up.fe.sdle2023.db.config.data;
 public class Node {
 
     private String name;
-    private String address;
+    private String host;
+    private int port;
 
     public Node() {}
 
-    public Node(String name, String address) {
+    public Node(String name, String host, int port) {
         this.name = name;
-        this.address = address;
+        this.host = host;
+        this.port = port;
     }
 
     public String getName() {
@@ -20,18 +22,28 @@ public class Node {
         this.name = name;
     }
 
-    public String getAddress() {
-        return address;
+    public String getHost() {
+        return host;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     @Override
     public String toString() {
         return "Node{" +
-                "address='" + address + '\'' +
+                "name='" + name + '\'' +
+                ", host='" + host + '\'' +
+                ", port=" + port +
                 '}';
     }
 }

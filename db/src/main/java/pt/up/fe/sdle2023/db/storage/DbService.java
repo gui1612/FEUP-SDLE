@@ -6,7 +6,7 @@ import org.rocksdb.RocksDBException;
 
 public class DbService implements AutoCloseable {
 
-    private RocksDB rocksDB;
+    private final RocksDB rocksDB;
 
     public DbService(String dbPath) throws RocksDBException {
         RocksDB.loadLibrary();

@@ -29,8 +29,8 @@ class EWFlag<K> {
         return this.value;
     }
 
-    merge(cc: EWFlag<K>): boolean {
-        this.awset.merge(cc.awset);
+    merge(ew: EWFlag<K>): boolean {
+        this.awset.merge(ew.awset);
 
         return this.value;
     }

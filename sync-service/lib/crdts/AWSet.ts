@@ -10,8 +10,9 @@ class AWSet<K, T> {
     private ctx = new DotContext<T>();
     private id: T;
 
-    constructor(id:T, set?: DotSet<K, T>) {
+    constructor(id:T, ctx?: DotContext<T>, set?: DotSet<K, T>) {
         this.id = id;
+        this.ctx = ctx ?? new DotContext();
         this.entrySet = set ?? new Set();
     }
 

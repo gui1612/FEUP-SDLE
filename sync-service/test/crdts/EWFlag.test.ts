@@ -9,33 +9,33 @@ suite("EWFlag", () => {
     
         test('enable', () => {
             const ewf = new EWFlag('A')
-            expect(ewf.enable()).toEqual(new Set([true]))
+            expect(ewf.enable()).toEqual(true)
         })
     
         test('disable', () => {
             const ewf = new EWFlag('A')
-            expect(ewf.disable()).toEqual(new Set([false]))
+            expect(ewf.disable()).toEqual(false)
         })
     
         test('merge', () => {
             const ewf = new EWFlag('A')
             ewf.enable()
-            expect(ewf.values).toEqual(new Set([true]))
+            expect(ewf.value).toEqual(true)
     
             const ewf2 = new EWFlag('B')
             ewf2.disable()
-            expect(ewf2.values).toEqual(new Set([false]))
+            expect(ewf2.value).toEqual(false)
     
             ewf.merge(ewf2)
-            expect(ewf.values).toEqual(new Set([true, false]))
+            expect(ewf.value).toEqual(true)
         })
     
         test('reset', () => {
             const ewf = new EWFlag('A')
             ewf.enable()
-            expect(ewf.values).toEqual(new Set([true]))
+            expect(ewf.value).toEqual(true)
     
             ewf.reset()
-            expect(ewf.values).toEqual(new Set([]))
+            expect(ewf.value).toEqual(false)
         })
 })

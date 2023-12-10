@@ -9,32 +9,36 @@ class EWFlag<K> {
         this.id = id;
     }
 
-    get values(): Set<boolean> {
-        return this.awset.values;
+    get value(): boolean {
+        return this.awset.values.size > 0;
     }
 
-    enable(): Set<boolean> {
+    enable(): boolean {
+        // This is an optimization
+        // https://github.com/CBaquero/delta-enabled-crdts/blob/master/delta-crdts.cc#1136
+        this.awset.remove(true) 
+
         this.awset.add(true);
 
-        return this.values;
+        return this.value;
     }
 
-    disable(): Set<boolean> {
-        this.awset.add(false);
+    disable(): boolean {
+        this.awset.remove(true) 
 
-        return this.values;
+        return this.value;
     }
 
-    merge(cc: EWFlag<K>): Set<boolean> {
+    merge(cc: EWFlag<K>): boolean {
         this.awset.merge(cc.awset);
 
-        return this.values;
+        return this.value;
     }
 
-    reset(): Set<boolean> {
+    reset(): boolean {
         this.awset.reset();
 
-        return this.values;
+        return this.value;
     }
 
     toJSON() {

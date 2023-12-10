@@ -7,15 +7,19 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      srcDir: 'src',
+      filename: 'service-worker.ts',
+      strategies: 'injectManifest',
+
       devOptions: {
-        enabled: true
+        enabled: true,
+        type: "module"
       },
-      injectRegister: 'script',
+
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg}']
       },
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+
       manifest: {
         name: 'SuperBasket',
         short_name: 'SB',

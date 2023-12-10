@@ -1,9 +1,8 @@
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/src/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
 import { Search } from "../search/search";
 import { ModeToggle } from "../theme/mode-toggle";
-
-
+import { Link } from "react-router-dom";
 
 export function MainNav({
     className,
@@ -22,7 +21,7 @@ export function MainNav({
                     >
                         <div className="flex items-center">
                             <div className="flex-shrink-0 mr-2">
-                                <a href="/">
+                                <Link to="/">
                                     <Avatar className="h-8 w-8">
                                         <AvatarImage
                                             src="/versevault-logo.png"
@@ -30,28 +29,28 @@ export function MainNav({
                                         />
                                         <AvatarFallback>VV</AvatarFallback>
                                     </Avatar>
-                                </a>
+                                </Link>
                             </div>
-                            <a 
-                                href="/"
+                            <Link
+                                to="/"
                                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
                             >
                                 ListHub
-                            </a>
+                            </Link>
                         </div>
 
-                        <a
-                            href="about"
+                        <Link
+                            to="/about"
                             className="text-sm font-medium transition-colors hover:text-primary"
                         >
                             About Us
-                        </a>
-                        <a
-                            href="/usage"
+                        </Link>
+                        <Link
+                            to="/usage"
                             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
                         >
                             Usage
-                        </a>
+                        </Link>
                     </nav>
                 </div>
                 <div className="ml-auto flex items-center space-x-4">

@@ -8,34 +8,29 @@ import {
 } from "react-router-dom";
 import "./index.css";
 // import './App.css'
-import Layout from "./components/layout.tsx";
+import Layout from "./src/components/layout.tsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <>
             {/* Insert your routes here */}
-            <Route path="/" lazy={() => import("./pages/home/route")} />
-            <Route
-                path="/about"
-                lazy={() => import("./pages/about-us/route")}
-            />
-            <Route path="/usage" lazy={() => import("./pages/usage/route")} />
+            <Route path="/" element={<Layout />}>
+                <Route path="/" lazy={() => import("./src/pages/home/route.tsx")} />
+                <Route
+                    path="/about"
+                    lazy={() => import("./src/pages/about-us/route.tsx")}
+                />
+                <Route path="/usage" lazy={() => import("./src/pages/usage/route.tsx")} />
 
-            {/* TODO: Implement most things (UUID, etc.) */}
-            <Route path="/basket" lazy={() => import("./pages/basket/route")} />
+                {/* TODO: Implement most things (UUID, etc.) */}
+                <Route path="/basket" lazy={() => import("./src/pages/basket/route.tsx")} />
+            </Route>
         </>
     ),
-    {
-        basename: import.meta.env.VITE_WEBSITE_BASE || "/",
-    }
 );
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-        {/* <App /> */}
-        <Layout>
-            <RouterProvider router={router} />
-        </Layout>
-        //{" "}
+        <RouterProvider router={router} />
     </React.StrictMode>
 );

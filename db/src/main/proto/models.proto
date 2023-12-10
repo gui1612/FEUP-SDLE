@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option java_package = "pt.up.fe.sdle2023.db.model";
+option java_outer_classname = "ModelProtos";
+
+message Token {
+  uint64 mostSignificantBits = 1;
+  uint64 leastSignificantBits = 2;
+}
+
+message Settings {
+  Token storageToken = 1;
+}

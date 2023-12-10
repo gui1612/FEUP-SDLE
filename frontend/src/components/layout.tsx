@@ -1,9 +1,10 @@
-import { MainNav } from "@/components/nav/main-nav";
-import { Footer } from "@/components/footer/footer";
-import { ThemeProvider } from "@/components/theme-provider";
+import { MainNav } from "@/src/components/nav/main-nav";
+import { Footer } from "@/src/components/footer/footer";
+import { ThemeProvider } from "@/src/components/theme-provider";
+import { Outlet } from "react-router-dom";
 // import "./globals.css";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout() {
     return (
         <>
             <div className="min-h-screen flex flex-col">
@@ -11,7 +12,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <div className="flex-grow grid grid-cols-1 grid-rows-1">
                         <div>
                             <MainNav />
-                            {children}
+                            <Outlet />
                         </div>
                     </div>
                     <div>

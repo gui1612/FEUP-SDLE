@@ -1,4 +1,4 @@
-import { ParallaxGlare } from "@/components/utils/parallax-glare";
+import { ParallaxGlare } from "@/src/components/utils/parallax-glare";
 
 export function AboutUs() {
     const developers = [

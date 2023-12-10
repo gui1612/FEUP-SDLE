@@ -18,6 +18,7 @@ dependencies {
     runtimeOnly("io.grpc:grpc-netty-shaded:1.59.0")
     implementation("io.grpc:grpc-protobuf:1.59.0")
     implementation("io.grpc:grpc-stub:1.59.0")
+    implementation("io.grpc:grpc-services:1.59.0")
     compileOnly("org.apache.tomcat:annotations-api:6.0.53") // necessary for Java 9+
 
     // Dependencies for RocksDB
@@ -46,6 +47,12 @@ protobuf {
                 id("grpc")
             }
         }
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 

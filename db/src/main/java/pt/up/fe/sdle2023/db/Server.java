@@ -1,61 +1,69 @@
 package pt.up.fe.sdle2023.db;
 
+import io.grpc.ServerBuilder;
+import io.grpc.protobuf.services.ProtoReflectionService;
 import org.rocksdb.RocksDBException;
 import pt.up.fe.sdle2023.db.config.data.Config;
-import pt.up.fe.sdle2023.db.identification.Token;
-import pt.up.fe.sdle2023.db.proto.DatabaseProtos;
-import pt.up.fe.sdle2023.db.repository.SettingsRepository;
+import pt.up.fe.sdle2023.db.partitioning.PartitionNodeRegistry;
+import pt.up.fe.sdle2023.db.partitioning.hashing.RingPartitionNodeRegistry;
+import pt.up.fe.sdle2023.db.repository.DataRepository;
+import pt.up.fe.sdle2023.db.services.QueryService;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 public class Server {
 
-    private final Config config;
-    private final String instanceName;
+    private static final Logger logger = Logger.getLogger(Server.class.getName());
+    private final int port;
 
-    private SettingsRepository settingsRepository;
+    private DataRepository dataRepository = null;
 
-    public Server(Config config, String instanceName) {
-        this.config = config;
-        this.instanceName = instanceName;
+    private  PartitionNodeRegistry partitionNodeRegistry = null;
 
+    public Server(int port) {
+        this.port = port;
     }
 
-    private void initiaizeRepositories() throws IOException, RocksDBException {
+    private void initializeRepositories() throws IOException, RocksDBException {
         var dataPath = Paths.get("repositories");
         Files.createDirectories(dataPath);
 
-        this.settingsRepository = new SettingsRepository(dataPath);
+        this.dataRepository = new DataRepository(dataPath);
     }
 
-    private DatabaseProtos.Settings createDefaultSettings() {
-        var storageToken = Token.randomToken();
-
-        return DatabaseProtos.Settings.newBuilder()
-                .setStorageToken(storageToken.toTokenProto())
-                .build();
+    private void closeRepositories() {
+        this.dataRepository.close();
     }
-    public void start() throws IOException {
+
+    private void initializeNodeRegistry(Config config) {
+        this.partitionNodeRegistry = new RingPartitionNodeRegistry();
+
+    }
+
+    public void run() throws InterruptedException {
         try {
-            this.initiaizeRepositories();
+            this.initializeRepositories();
 
-            var nodeConfig = config.getCluster().stream()
-                    .filter(node -> node.getName().equals(instanceName))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("No node with name %s".formatted(instanceName)));
+            var grpcServer = ServerBuilder.forPort(port)
+                    .addService(new QueryService(dataRepository))
+                    .addService(ProtoReflectionService.newInstance())
+                    .executor(Executors.newVirtualThreadPerTaskExecutor())
+                    .build();
 
-            var storedSettings = settingsRepository.get();
-            if (storedSettings == null) {
-                storedSettings = settingsRepository.put(this.createDefaultSettings());
-            }
+            grpcServer.start();
+            logger.config("Server listening on 0.0.0.0:%d".formatted(port));
 
-            System.out.printf("Starting server on %s:%d%n", nodeConfig.getHost(), nodeConfig.getPort());
+            grpcServer.awaitTermination();
 
-        } catch (RocksDBException e) {
-            System.err.println("Failed to initialize server");
-            throw new RuntimeException(e);
+        } catch (RocksDBException | IOException e) {
+            logger.severe("Failed to start server");
+            logger.throwing(Server.class.getName(), "start", e);
+        } finally {
+            this.closeRepositories();
         }
     }
 }

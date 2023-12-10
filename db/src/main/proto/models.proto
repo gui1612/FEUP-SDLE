@@ -11,3 +11,21 @@ message Token {
 message Settings {
   Token storageToken = 1;
 }
+
+message VectorClock {
+  message Entry {
+    Token nodeToken = 1;
+    uint64 counter = 2;
+  }
+
+  repeated Entry entries = 1;
+}
+
+message StoredData {
+  message Version {
+    VectorClock vectorClock = 1;
+    bytes data = 2;
+  }
+
+  repeated Version versions = 1;
+}

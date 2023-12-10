@@ -1,14 +1,14 @@
 package pt.up.fe.sdle2023.db.config.data;
 
-public class Node {
+public class NodeConfig {
 
     private String name;
     private String host;
     private int port;
 
-    public Node() {}
+    public NodeConfig() {}
 
-    public Node(String name, String host, int port) {
+    public NodeConfig(String name, String host, int port) {
         this.name = name;
         this.host = host;
         this.port = port;

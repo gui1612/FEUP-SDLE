@@ -1,7 +1,7 @@
 syntax = "proto3";
 import "google/protobuf/empty.proto";
 
-option java_package = "pt.up.fe.sdle2023.db.proto";
+option java_package = "pt.up.fe.sdle2023.db.controller";
 option java_outer_classname = "ServiceProtos";
 
 service QueryService {
@@ -34,3 +34,7 @@ message QueryPutRequest {
     bytes value = 3;
 }
 
+//service InterNodeService {
+//    rpc getEntry(InterNodeGetRequest) returns (InterNodeGetResponse) {}
+//    rpc putEntry(InterNodePutRequest) returns (google.protobuf.Empty) {}
+//}

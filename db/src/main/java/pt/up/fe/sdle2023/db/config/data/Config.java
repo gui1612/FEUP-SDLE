@@ -4,13 +4,13 @@ import java.util.List;
 
 public class Config {
 
-    private List<Node> cluster;
+    private List<NodeConfig> cluster;
 
-    public List<Node> getCluster() {
+    public List<NodeConfig> getCluster() {
         return cluster;
     }
 
-    public void setCluster(List<Node> cluster) {
+    public void setCluster(List<NodeConfig> cluster) {
         this.cluster = cluster;
     }
 

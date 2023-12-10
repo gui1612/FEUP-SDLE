@@ -1,55 +1,72 @@
-import { AWSet } from "./DotKernel";
-import { DotContext } from "./DotContext";
+import { AWSetHelper } from "./AWSetHelper";
 
 class CCounter<K> {
-
-    private awset: AWSet<number, K> = new AWSet();
+    private awset: AWSetHelper<number, K>;
     private id: K;
 
-    // make a constructor that receives an id and an awset or a dotcontext
-    // constructor(dotContext?: DotContext<K>, id: K) {
-    //     this.awset = new AWSet();
-    //     this.id = id;
-    //     if (dotContext) {
-    //         for (const [key, value] of dotContext.entrySet) {
-    //             this.awset.add(this.id, value);
-    //         }
-    //     }
-    // }
-
-    constructor(awset?: AWSet<number, K>, id: K) {
-        this.awset = awset ?? new AWSet();
+    constructor(id: K, awset?: AWSetHelper<number, K>) {
+        this.awset = awset ?? new AWSetHelper(id);
         this.id = id;
-        
     }
 
+    get values(): number {
+        if (this.awset.values.size === 0) return 0;
 
-    inc(value: number = 1) {
-        for (const [replicaValue, replicaId, ] of this.awset.entrySet) {
+        return Array.from(this.awset.values.values()).reduce((acc, val) => {
+            return acc + val;
+        });
+    }
+
+    inc(value: number = 1): number {
+        let base = 0;
+
+        for (const entry of this.awset.dotSet) {
+            const [replicaValue, replicaId] = entry;
             if (this.id === replicaId) {
-                this.awset.remove(this.id, replicaValue);
+                base = Math.max(base, replicaValue);
+                this.awset.remove(replicaValue);
                 break;
             }
-            this.awset.add(this.id, value + replicaValue);
         }
+
+        this.awset.add(base + value);
+
+        return this.values;
     }
 
-    dec(value: number = 1) {
-        for (const [replicaValue, replicaId, ] of this.awset.entrySet) {
+    dec(value: number = 1): number {
+        let base = 0;
+
+        for (const entry of this.awset.dotSet) {
+            const [replicaValue, replicaId] = entry;
             if (this.id === replicaId) {
-                this.awset.remove(this.id, replicaValue);
-                this.awset.add(this.id, replicaValue - value);
+                base = Math.max(base, replicaValue);
+                this.awset.remove(replicaValue);
                 break;
             }
         }
+
+        if (base - value < 0) throw new Error("Cannot decrement below 0");
+
+        this.awset.add(base - value);
+
+        return this.values;
     }
 
-    reset() {
+    reset(): number {
         this.awset.reset();
+
+        return this.values;
     }
 
-    merge(cc: CCounter<K>) {
+    merge(cc: CCounter<K>): number {
         this.awset.merge(cc.awset);
+
+        return this.values;
+    }
+
+    toJSON() {
+        return this.awset.toJSON();
     }
 }
 

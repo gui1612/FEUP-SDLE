@@ -3,14 +3,13 @@ import { CCounter } from "./CCounter";
 import { DotContext } from "./DotContext";
 import { EWFlag } from "./EWFlag";
 
-type CRDT<N, K, T> =
-    | AWORMap<N, CRDT<K, unknown>, T>
+type CRDT<N, V, K, T> =
+    | AWORMap<N, CRDT<N, V, K, T>, T>
     | AWSet<K, T>
     | CCounter<T>
     | EWFlag<T>;
 
-
-class AWORMap<N, V extends CRDT<V, unknown>, K> {
+class AWORMap<N, V extends CRDT<N, V, unknown, K>, K> {
     private map: Map<N, V>;
     private dotContext: DotContext<K> = new DotContext();
     private awset: AWSet<N, K>;
@@ -37,10 +36,9 @@ class AWORMap<N, V extends CRDT<V, unknown>, K> {
             // @ts-expect-error TS can not infer the type of an union of CRDTs
             this.map.get(key)?.merge(value);
         }
-    
-        if (!this.awset.values.has(key))
-            this.awset.add(key);
-        
+
+        if (!this.awset.values.has(key)) this.awset.add(key);
+
         return this.values;
     }
 
@@ -55,8 +53,7 @@ class AWORMap<N, V extends CRDT<V, unknown>, K> {
         this.awset.merge(aw.awset);
 
         for (const [key, value] of aw.values) {
-            if (this.awset.values.has(key))
-                this.set(key, value);
+            if (this.awset.values.has(key)) this.set(key, value);
         }
 
         // merging the contexts
@@ -65,9 +62,7 @@ class AWORMap<N, V extends CRDT<V, unknown>, K> {
         return this.values;
     }
 
-
-
-    toJSON() {
+    toJSON(): object {
         return {
             value: this.awset.toJSON(),
             map: Array.from(this.map.entries()).map(([key, value]) => {

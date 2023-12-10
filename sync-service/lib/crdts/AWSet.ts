@@ -6,7 +6,7 @@ type DotVal<K, T> = [K, T, number];
 type DotSet<K, T> = Set<DotVal<K, T>>;
 
 class AWSet<K, T> {
-    private entrySet: DotSet<K, T> = new Set();
+    protected entrySet: DotSet<K, T> = new Set();
     private ctx = new DotContext<T>();
     private id: T;
 

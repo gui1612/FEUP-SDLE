@@ -86,7 +86,7 @@ class CCounter<K> {
     }
 
     toJSON() {
-        return this.awset.toJSON();
+        return [this.id, this.awset.toJSON()];
     }
 }
 

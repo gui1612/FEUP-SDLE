@@ -1,19 +1,13 @@
 import { EWFlag } from "../../lib/crdts/EWFlag";
 import { CCounter } from "../../lib/crdts/CCounter";
 
-class BaseItem {
+
+class SingleItem  {
     public id: string;
-
-    constructor(id: string) {
-        this.id = id;
-    }
-}
-
-class SingleItem extends BaseItem {
     private bought: EWFlag<string>;
 
     constructor(id: string, bought: EWFlag<string>) {
-        super(id);
+        this.id = id;
         this.bought = bought;
     }
 
@@ -25,17 +19,27 @@ class SingleItem extends BaseItem {
         return new SingleItem(id, this.bought);
     }
 
-    toJSON() {
-        return [this.id, this.bought.toJSON()];
+    toJSON() : {
+        type: "single";
+        id: string;
+        bought: ReturnType<EWFlag<string>["toJSON"]>;
+    } {
+    //[string, ReturnType<EWFlag<string>["toJSON"]>]{
+        return {
+            type: "single",
+            id: this.id, 
+            bought: this.bought.toJSON()
+        };
     }
 }
 
-class MultiItem extends BaseItem {
+class MultiItem {
+    public id: string; 
     private cartItems: CCounter<string>;
     private boughtItems: CCounter<string>;
 
     constructor(id: string, cartItems: CCounter<string>, boughtItems: CCounter<string>) {
-        super(id);
+        this.id = id;
         this.cartItems = cartItems;
         this.boughtItems = boughtItems;
     }
@@ -49,9 +53,23 @@ class MultiItem extends BaseItem {
         return new MultiItem(id, this.cartItems, this.boughtItems);
     }
 
-    toJSON() {
-        return [this.id, this.cartItems.toJSON(), this.boughtItems.toJSON()];
+    // toJSON() {
+    //     return [this.id, this.cartItems.toJSON(), this.boughtItems.toJSON()];
+    // }
+
+    toJSON() : {
+        type: "multi";
+        id: string;
+        toBuy: ReturnType<CCounter<string>["toJSON"]>;
+        bought: ReturnType<CCounter<string>["toJSON"]>;
+    } {
+        return {
+            type: "multi",
+            id: this.id, 
+            toBuy: this.cartItems.toJSON(),
+            bought: this.boughtItems.toJSON()
+        };
     }
 }
 
-export { BaseItem, SingleItem, MultiItem };
+export { SingleItem, MultiItem };

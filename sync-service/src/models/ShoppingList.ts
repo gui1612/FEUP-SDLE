@@ -1,11 +1,8 @@
 import { AWORMap } from "../../lib/crdts/AWORMap";
-import { AWSet } from "../../lib/crdts/AWSet";
 import { CCounter } from "../../lib/crdts/CCounter";
-import { EWFlag } from "../../lib/crdts/EWFlag";
 import { DotContext } from "../../lib/crdts/DotContext";
-import { AWSetHelper } from "../../lib/crdts/AWSetHelper";
-import { BaseItem, MultiItem, SingleItem } from "./Item";
-
+import { EWFlag } from "../../lib/crdts/EWFlag";
+import { MultiItem, SingleItem } from "./Item";
 
 type ListItem = SingleItem | MultiItem;
 
@@ -15,7 +12,12 @@ class ShoppingList {
     private items: AWORMap<string, ListItem, string>;
     private listName: string;
 
-    constructor(id: string, listName: string, items: AWORMap<string, ListItem, string>, dots: DotContext<string>) {
+    constructor(
+        id: string,
+        listName: string,
+        items: AWORMap<string, ListItem, string>,
+        dots: DotContext<string>
+    ) {
         this.uuid = id;
         this.listName = listName;
         this.items = items;
@@ -37,15 +39,47 @@ class ShoppingList {
         return this.items.values;
     }
 
-    toJSON() {
+    toJSON(): {
+        uuid: string;
+        name: string;
+        items: ReturnType<AWORMap<string, ListItem, string>["toJSON"]>;
+        dots: ReturnType<DotContext<string>["toJSON"]>;
+    } {
         return {
-            id: this.id,
+            uuid: this.uuid,
             name: this.listName,
             items: this.items.toJSON(),
-            dots: this.dots.toJSON()
-        }
+            dots: this.dots.toJSON(),
+        };
     }
 
+    // create a function with an argument that is SHoppingList toJSON result
+    fromJSON(json: ReturnType<ShoppingList["toJSON"]>) {
+        const uuid = json.uuid;
+        const listName = json.name;
+        const dots: DotContext<string> = new DotContext(json.dots);
+        const items: AWORMap<string, ListItem, string> = new AWORMap<string, ListItem, string>(
+            json.uuid,
+            undefined,
+            json.items.map.map(([id, item]) => [
+                id,
+                
+                item.type === "multi"
+                    ? new MultiItem(
+                          id,
+                          new CCounter(item.toBuy.id, undefined, dots),
+                          new CCounter(item.toBuy.id, undefined, dots)
+                      )
+                    : new SingleItem(
+                          id,
+                          new EWFlag(item.bought.id, undefined, dots)
+                      ),
+            ]),
+            undefined,
+        );
+
+        return new ShoppingList(uuid, listName, items, dots);
+    }
 }
 
 export { ShoppingList };

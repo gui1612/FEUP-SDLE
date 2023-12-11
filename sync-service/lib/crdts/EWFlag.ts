@@ -53,8 +53,15 @@ class EWFlag<K> {
         return this.value;
     }
 
-    toJSON() {
-        return [this.id, this.awset.toJSON()];
+    toJSON() : {
+        id: K;
+        awset: ReturnType<AWSetHelper<boolean, K>["toJSON"]>;
+    } {
+    //[K, ReturnType<AWSetHelper<boolean, K>["toJSON"]>] {
+        return {
+            id: this.id, 
+            awset: this.awset.toJSON()
+        };
     }
 }
 

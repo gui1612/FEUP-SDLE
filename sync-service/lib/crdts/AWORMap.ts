@@ -1,23 +1,16 @@
-import { CCounter } from "./CCounter";
 import { DotContext } from "./DotContext";
-import { EWFlag } from "./EWFlag";
 import { AWSetHelper } from "./AWSetHelper";
 import { AWSet } from "./AWSet";
 
-type CRDT<N, V, K, T> =
-    | AWORMap<N, CRDT<N, V, K, T>, T>
-    | AWSetHelper<K, T>
-    | AWSet<K, T>
-    | CCounter<T>
-    | EWFlag<T>;
 
-// specify that for an item to be a CRDT it must have a merge method
 interface CRDTInterface<N, V, K, T> {
     id: T;
 
-    merge(aw: CRDT<N, V, K, T>, deep: boolean): void;
-    clone(id: T): CRDT<N, V, K, T>;
-    toJSON(): object;
+    merge(aw: CRDTInterface<N, V, K, T>, deep: boolean): void;
+    clone(id: T): CRDTInterface<N, V, K, T>;
+    // this is definitely not the best practice, but it works
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    toJSON(): any;
 }
 
 class AWORMap<N, V extends CRDTInterface<N, V, unknown, K>, K> {
@@ -29,13 +22,13 @@ class AWORMap<N, V extends CRDTInterface<N, V, unknown, K>, K> {
     constructor(
         id: K,
         set: ConstructorParameters<typeof AWSet<N, K>>[2] = new Set(),
-        map?: Map<N, V>,
+        map: ConstructorParameters<typeof Map<N, V>>[0] = new Map(),
         dotContext: DotContext<K> = new DotContext()
     ) {
         this.id = id;
         this.dotContext = dotContext;
         this.awset = new AWSetHelper(id, this.dotContext, set);
-        this.map = map ?? new Map();
+        this.map = new Map(map);
     }
 
     get ctx(): DotContext<K> {
@@ -73,7 +66,6 @@ class AWORMap<N, V extends CRDTInterface<N, V, unknown, K>, K> {
             // @ts-expect-error TS can not infer the type of an union of CRDTs
             this.map.set(key, value.clone(this.id));
         } else {
-            // @ts-expect-error TS can not infer the type of an union of CRDTs
             this.map.get(key).merge(value, deep);
         }
 
@@ -109,10 +101,13 @@ class AWORMap<N, V extends CRDTInterface<N, V, unknown, K>, K> {
         return this.values;
     }
 
-    toJSON(): object {
+    toJSON(): {
+        set: ReturnType<AWSetHelper<N, K>["toJSON"]>;
+        map: [N, ReturnType<V["toJSON"]>][];
+    } {
         return {
             set: this.awset.toJSON(),
-            map: Array.from(this.map.entries()).map(([key, value]) => {
+            map: [...this.map.entries()].map(([key, value]) => {
                 return [key, value.toJSON()];
             }),
         };

@@ -1,4 +1,5 @@
 import { AWSet } from "./AWSet";
+import { DotContext } from "./DotContext";
 
 type DotVal<K, T> = [K, T, number];
 type DotSet<K, T> = Set<DotVal<K, T>>;
@@ -13,6 +14,14 @@ class AWSetHelper<K, T> extends AWSet<K, T> {
         return this.entrySet;
     }
 
+    getCtx(): DotContext<T> {
+        return this.ctx;
+    }
+
+    getEntrySet(): DotSet<K, T> {
+        return this.entrySet;
+    }
+
     removeById(id: T, value: K): Set<K> {
         for (const dotVal of this.entrySet) {
             const [currValue, currId] = dotVal;
@@ -23,6 +32,10 @@ class AWSetHelper<K, T> extends AWSet<K, T> {
         }
 
         return this.values;
+    }
+
+    clone(id: T): AWSetHelper<K, T> {
+        return new AWSetHelper(id, this.ctx, new Set(this.entrySet));
     }
 }
 

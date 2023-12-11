@@ -6,14 +6,18 @@ type DotVal<K, T> = [K, T, number];
 type DotSet<K, T> = Set<DotVal<K, T>>;
 
 class AWSet<K, T> {
-    protected entrySet: DotSet<K, T> = new Set();
-    private ctx = new DotContext<T>();
-    private id: T;
+    protected entrySet: DotSet<K, T>;
+    protected ctx = new DotContext<T>();
+    public id: T;
 
-    constructor(id:T, ctx?: DotContext<T>, set?: DotSet<K, T>) {
+    constructor(
+        id: T,
+        ctx: DotContext<T> = new DotContext(),
+        set: DotSet<K, T> = new Set()
+    ) {
         this.id = id;
-        this.ctx = ctx ?? new DotContext();
-        this.entrySet = set ?? new Set();
+        this.ctx = ctx;
+        this.entrySet = set instanceof Set ? set : new Set(set);
     }
 
     get values(): Set<K> {
@@ -26,6 +30,10 @@ class AWSet<K, T> {
         this.entrySet.add([value, ...dot]);
 
         return this.values;
+    }
+
+    clone(id: T): AWSet<K, T> {
+        return new AWSet(id, this.ctx, this.entrySet);
     }
 
     remove(value: K): Set<K> {
@@ -59,7 +67,7 @@ class AWSet<K, T> {
         return res;
     }
 
-    merge(aw: AWSet<K, T>): Set<K> {
+    merge(aw: AWSet<K, T>, deep = true): Set<K> {
         const f1 = this.f(this.entrySet, aw.ctx);
         const f2 = this.f(aw.entrySet, this.ctx);
 
@@ -68,7 +76,7 @@ class AWSet<K, T> {
             f2
         );
 
-        this.ctx.merge(aw.ctx);
+        if (deep) this.ctx.merge(aw.ctx);
 
         return this.values;
     }
@@ -81,7 +89,7 @@ class AWSet<K, T> {
     }
 
     toString(): string {
-        let output = "DotKernel:";
+        let output = ":";
         output += " ( ";
         for (const [value, id, dot] of this.entrySet) {
             output += `\n\t${value}:${id}:${dot},`;

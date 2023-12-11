@@ -1,5 +1,6 @@
 import { expect, test, suite } from 'vitest'
 import { CCounter } from '../../lib/crdts/CCounter'
+import { DotContext } from '../../lib/crdts/DotContext'
 
 suite("CCounter", () => {
 
@@ -61,15 +62,34 @@ suite("CCounter", () => {
         expect(cc.values).toEqual(3)
     })
 
-    test("merge with self", () => {
-        const cc = new CCounter('A');
+    test("merge with other", () => {
+        const cc1 = new CCounter('A');
+        cc1.inc();
+        
+        const cc2 = new CCounter('B');
+        cc2.inc();
 
-        cc.inc();
+        cc1.merge(cc2);
 
-        expect(cc.merge(cc)).toBe(1);
+        expect(cc1.values).toBe(2);
+    })
 
-        cc.inc();
 
-        expect(cc.merge(cc)).toBe(2);
-    });
+    test('causal context', () => {
+        const cc1 = new CCounter('A');
+        cc1.inc(6);
+        cc1.inc(2);
+
+        const cc2 = new CCounter('B');
+        cc2.inc(6)
+
+        cc1.merge(cc2);
+
+        expect(cc1.getCtx()).toEqual(
+            new DotContext(new Map([
+                [ 'A', 2 ],
+                [ 'B', 1 ]
+            ]))
+        )
+    })
 })

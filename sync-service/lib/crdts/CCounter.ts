@@ -1,20 +1,40 @@
 import { AWSetHelper } from "./AWSetHelper";
+import { DotContext } from "./DotContext";
+
+type DotVal<K, T> = [K, T, number];
+type DotSet<K, T> = Set<DotVal<K, T>>;
 
 class CCounter<K> {
-    private awset: AWSetHelper<number, K>;
-    private id: K;
+    public awset: AWSetHelper<number, K>;
+    public id: K;
 
-    constructor(id: K, awset?: AWSetHelper<number, K>) {
-        this.awset = awset ?? new AWSetHelper(id);
+    constructor(
+        id: K,
+        set: DotSet<number, K> = new Set(),
+        dots = new DotContext<K>()
+    ) {
         this.id = id;
+        this.awset = new AWSetHelper(id, dots, set);
+    }
+
+    getCtx() {
+        return this.awset.getCtx();
+    }
+
+    clone(id: K): CCounter<K> {
+        return new CCounter(id, this.awset.getEntrySet(), this.awset.getCtx());
     }
 
     get values(): number {
         if (this.awset.values.size === 0) return 0;
 
-        return Array.from(this.awset.values.values()).reduce((acc, val) => {
-            return acc + val;
-        });
+        let sum = 0;
+        for (const entry of this.awset.dotSet.values()) {
+            const [replicaValue] = entry;
+            sum += replicaValue;
+        }
+
+        return sum;
     }
 
     inc(value: number = 1): number {
@@ -59,10 +79,10 @@ class CCounter<K> {
         return this.values;
     }
 
-    merge(cc: CCounter<K>): number {
-        this.awset.merge(cc.awset);
+    merge(cc: CCounter<K>, deep = true): CCounter<K> {
+        this.awset.merge(cc.awset, deep);
 
-        return this.values;
+        return this;
     }
 
     toJSON() {

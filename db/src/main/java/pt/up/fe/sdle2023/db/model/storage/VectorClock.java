@@ -34,6 +34,22 @@ public class VectorClock {
         return true;
     }
 
+    public VectorClock merge(VectorClock other) {
+        // To merge two vector clocks, take the maximum of each individual element in the two clocks.
+        // This will create a new clock that represents both clocks.
+
+        var newClock = new VectorClock(this.clock);
+
+        for (var entry : other.clock.entrySet()) {
+            var storageNodeId = entry.getKey();
+            var counter = entry.getValue();
+
+            newClock.clock.put(storageNodeId, Math.max(newClock.getCounter(storageNodeId), counter));
+        }
+
+        return newClock;
+    }
+
     public long getCounter(Token node) {
         return this.clock.getOrDefault(node, 0L);
     }

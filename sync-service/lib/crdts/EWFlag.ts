@@ -54,7 +54,7 @@ class EWFlag<K> {
     }
 
     toJSON() {
-        return this.awset.toJSON();
+        return [this.id, this.awset.toJSON()];
     }
 }
 

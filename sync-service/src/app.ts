@@ -1,30 +1,39 @@
 import 'dotenv/config';
 import express from 'express';
-import { CCounter } from '../lib/crdts/CCounter';
-import { AWORMap } from '../lib/crdts/AWORMap';
+import listRoutes from './routes/list'
+import morgan from 'morgan';
 
 const app = express();
 const port = process.env.PORT;
 
+const router = express.Router();
+
+
+router.use(morgan('dev'));
+
+router.use(express.urlencoded({ extended: false }));
+
+router.use(express.json());
+
+router.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Header', 'origin, X-Requested-With, Content-Type, Accept, Authorization');
+
+    if (req.method === 'OPTIONS') {
+        res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+
+        return res.status(200).json({});
+    }
+})
+
+
+
+app.use(express.json());
+
+app.use('/list', listRoutes);
+
 app.get('/', (req, res) => {
 
-    const aw1 = new AWORMap<string, CCounter<string>, string>("A");
-    const aw2 = new AWORMap<string, CCounter<string>, string>("B");
-
-    const cc1 = new CCounter("CC1", undefined, aw1.ctx);
-    aw1.set("conflict", cc1);  
-    
-    aw1.get("conflict")?.inc(6);
-
-    const cc2 = new CCounter("CC2", undefined, aw2.ctx);
-    aw2.set("conflict", cc2);
-    aw2.get("conflict")?.inc(4);
-
-    aw1.merge(aw2);
-
-    console.log(JSON.stringify(aw1.toJSON(), null, 2));
-    
-    res.json(aw1.toJSON());
 });
 
 app.listen(port, () => {

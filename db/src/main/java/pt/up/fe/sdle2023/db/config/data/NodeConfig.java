@@ -5,13 +5,15 @@ public class NodeConfig {
     private String name;
     private String host;
     private int port;
+    private int capacity;
 
     public NodeConfig() {}
 
-    public NodeConfig(String name, String host, int port) {
+    public NodeConfig(String name, String host, int port, int capacity) {
         this.name = name;
         this.host = host;
         this.port = port;
+        this.capacity = capacity;
     }
 
     public String getName() {
@@ -38,12 +40,21 @@ public class NodeConfig {
         this.port = port;
     }
 
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
     @Override
     public String toString() {
         return "Node{" +
                 "name='" + name + '\'' +
                 ", host='" + host + '\'' +
-                ", port=" + port +
+                ", port='" + port + '\'' +
+                ", capacity=" + capacity +
                 '}';
     }
 }

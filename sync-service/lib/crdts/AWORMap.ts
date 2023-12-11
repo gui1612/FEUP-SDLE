@@ -3,7 +3,6 @@ import { DotContext } from "./DotContext";
 import { EWFlag } from "./EWFlag";
 import { AWSetHelper } from "./AWSetHelper";
 import { AWSet } from "./AWSet";
-import { R } from "vitest/dist/reporters-5f784f42";
 
 type CRDT<N, V, K, T> =
     | AWORMap<N, CRDT<N, V, K, T>, T>
@@ -12,10 +11,16 @@ type CRDT<N, V, K, T> =
     | CCounter<T>
     | EWFlag<T>;
 
-type DotVal<K, T> = [K, T, number];
-type DotSet<K, T> = Set<DotVal<K, T>>;
+// specify that for an item to be a CRDT it must have a merge method
+interface CRDTInterface<N, V, K, T> {
+    id: T;
 
-class AWORMap<N, V extends CRDT<N, V, unknown, K>, K> {
+    merge(aw: CRDT<N, V, K, T>, deep: boolean): void;
+    clone(id: T): CRDT<N, V, K, T>;
+    toJSON(): object;
+}
+
+class AWORMap<N, V extends CRDTInterface<N, V, unknown, K>, K> {
     private map: Map<N, V>;
     private dotContext: DotContext<K>;
     private awset: AWSetHelper<N, K>;
@@ -106,11 +111,10 @@ class AWORMap<N, V extends CRDT<N, V, unknown, K>, K> {
 
     toJSON(): object {
         return {
-            value: this.awset.toJSON(),
+            set: this.awset.toJSON(),
             map: Array.from(this.map.entries()).map(([key, value]) => {
                 return [key, value.toJSON()];
             }),
-            dc: this.dotContext.toJSON(),
         };
     }
 }

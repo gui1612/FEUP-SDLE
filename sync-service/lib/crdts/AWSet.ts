@@ -81,23 +81,10 @@ class AWSet<K, T> {
         return this.values;
     }
 
-    toJSON(): { value: DotVal<K, T>[]; dots: DotContext<T> } {
-        return {
-            value: [...this.entrySet.values()],
-            dots: this.ctx,
-        };
+    toJSON(): DotVal<K, T>[]  {
+        return [...this.entrySet.values()]
     }
 
-    toString(): string {
-        let output = ":";
-        output += " ( ";
-        for (const [value, id, dot] of this.entrySet) {
-            output += `\n\t${value}:${id}:${dot},`;
-        }
-        output += ")";
-
-        return output;
-    }
 }
 
 export { AWSet };

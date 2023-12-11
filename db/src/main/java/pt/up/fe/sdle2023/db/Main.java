@@ -55,7 +55,7 @@ public class Main {
             var reader = new ConfigReader();
             var config = reader.read(configPath);
 
-            var server = new Server(6000);
+            var server = new Server(config, instanceName);
             server.run();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Could not read config file", e);

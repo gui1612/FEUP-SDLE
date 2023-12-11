@@ -3,11 +3,13 @@ package pt.up.fe.sdle2023.db;
 import io.grpc.ServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
 import org.rocksdb.RocksDBException;
+import pt.up.fe.sdle2023.db.cluster.partitioning.PartitionNodeRegistry;
+import pt.up.fe.sdle2023.db.cluster.partitioning.hashing.ConsistentHashingPartitionNodeFactory;
+import pt.up.fe.sdle2023.db.cluster.partitioning.hashing.RingPartitionNodeRegistry;
 import pt.up.fe.sdle2023.db.config.data.Config;
-import pt.up.fe.sdle2023.db.partitioning.PartitionNodeRegistry;
-import pt.up.fe.sdle2023.db.partitioning.hashing.RingPartitionNodeRegistry;
-import pt.up.fe.sdle2023.db.repository.DataRepository;
-import pt.up.fe.sdle2023.db.services.QueryService;
+import pt.up.fe.sdle2023.db.model.Token;
+import pt.up.fe.sdle2023.db.repository.StoredDataRepository;
+import pt.up.fe.sdle2023.db.service.QueryService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,9 +22,9 @@ public class Server {
     private static final Logger logger = Logger.getLogger(Server.class.getName());
     private final int port;
 
-    private DataRepository dataRepository = null;
+    private StoredDataRepository storedDataRepository = null;
 
-    private  PartitionNodeRegistry partitionNodeRegistry = null;
+    private PartitionNodeRegistry partitionNodeRegistry = null;
 
     public Server(int port) {
         this.port = port;
@@ -32,16 +34,25 @@ public class Server {
         var dataPath = Paths.get("repositories");
         Files.createDirectories(dataPath);
 
-        this.dataRepository = new DataRepository(dataPath);
+        this.storedDataRepository = new StoredDataRepository(dataPath);
     }
 
     private void closeRepositories() {
-        this.dataRepository.close();
+        this.storedDataRepository.close();
     }
 
     private void initializeNodeRegistry(Config config) {
         this.partitionNodeRegistry = new RingPartitionNodeRegistry();
 
+        for (var nodeConfig : config.getCluster()) {
+            var storageToken = Token.digestString(nodeConfig.getName());
+
+            var nodeFactory = new ConsistentHashingPartitionNodeFactory(storageToken);
+            for (var i = 0; i  < nodeConfig.getCapacity(); i++) {
+                var node = nodeFactory.createNewNode();
+                this.partitionNodeRegistry.addNode(node);
+            }
+        }
     }
 
     public void run() throws InterruptedException {
@@ -49,7 +60,7 @@ public class Server {
             this.initializeRepositories();
 
             var grpcServer = ServerBuilder.forPort(port)
-                    .addService(new QueryService(dataRepository))
+                    .addService(new QueryService(storedDataRepository))
                     .addService(ProtoReflectionService.newInstance())
                     .executor(Executors.newVirtualThreadPerTaskExecutor())
                     .build();

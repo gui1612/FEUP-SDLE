@@ -1,0 +1,25 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+import "models.proto";
+
+option java_package = "pt.up.fe.sdle2023.db.service";
+option java_outer_classname = "ServiceProtos";
+
+message Context {
+  VectorClock vectorClock = 1;
+}
+
+message GetResponse {
+  Context context = 1;
+  repeated bytes values = 2;
+}
+
+message GetRequest {
+  string key = 1;
+}
+
+message PutRequest {
+  Context context = 1;
+  string key = 2;
+  bytes value = 3;
+}

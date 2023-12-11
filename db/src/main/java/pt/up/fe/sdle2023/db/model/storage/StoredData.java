@@ -5,6 +5,7 @@ import pt.up.fe.sdle2023.db.model.ModelProtos;
 import pt.up.fe.sdle2023.db.model.ProtoSerializer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class StoredData {
@@ -12,7 +13,7 @@ public class StoredData {
     private final List<StoredDataVersion> versions;
 
     public StoredData(List<StoredDataVersion> versions) {
-        this.versions = new ArrayList<>(versions);
+        this.versions = Collections.unmodifiableList(versions);
     }
 
     public List<StoredDataVersion> getVersions() {

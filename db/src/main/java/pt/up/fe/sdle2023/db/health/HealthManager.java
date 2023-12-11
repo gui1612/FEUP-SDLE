@@ -1,32 +1,31 @@
 package pt.up.fe.sdle2023.db.health;
 
-public class NodeHealthManager {
+public class HealthManager {
 
     public enum State {
-        UNKNOWN,
         HEALTHY,
         UNHEALTHY,
     }
 
     private final long timeout;
 
-    private State state = State.UNKNOWN;
+    private State state = State.HEALTHY;
     private long lastCheck = 0;
 
-    public NodeHealthManager(long timeout) {
+    public HealthManager(long timeout) {
         this.timeout = timeout;
     }
 
-    public boolean isUnhealthy() {
+    public synchronized boolean isHealthy() {
         var now = System.currentTimeMillis();
         if (state == State.UNHEALTHY && now - lastCheck > timeout) {
-            state = State.UNKNOWN;
+            state = State.HEALTHY;
         }
 
-        return state == State.UNHEALTHY;
+        return state == State.HEALTHY;
     }
 
-    public void markUnhealthy() {
+    public synchronized void markUnhealthy() {
         state = State.UNHEALTHY;
         lastCheck = System.currentTimeMillis();
     }

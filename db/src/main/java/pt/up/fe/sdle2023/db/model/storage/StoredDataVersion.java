@@ -8,9 +8,9 @@ import pt.up.fe.sdle2023.db.model.ProtoSerializer;
 public class StoredDataVersion {
 
     private final VectorClock vectorClock;
-    private final byte[] data;
+    private final ByteString data;
 
-    public StoredDataVersion(VectorClock vectorClock, byte[] data) {
+    public StoredDataVersion(VectorClock vectorClock, ByteString data) {
         this.vectorClock = vectorClock;
         this.data = data;
     }
@@ -19,7 +19,7 @@ public class StoredDataVersion {
         return vectorClock;
     }
 
-    public byte[] getData() {
+    public ByteString getData() {
         return data;
     }
 
@@ -30,16 +30,16 @@ public class StoredDataVersion {
         @Override
         public ModelProtos.StoredData.Version toProto(StoredDataVersion model) {
             return ModelProtos.StoredData.Version.newBuilder()
-                    .setVectorClock(vectorClockSerializer.toProto(model.getVectorClock()))
-                    .setData(ByteString.copyFrom(model.getData()))
-                    .build();
+                .setVectorClock(vectorClockSerializer.toProto(model.getVectorClock()))
+                .setData(model.getData())
+                .build();
         }
 
         @Override
         public StoredDataVersion fromProto(ModelProtos.StoredData.Version proto) {
             return new StoredDataVersion(
-                    vectorClockSerializer.fromProto(proto.getVectorClock()),
-                    proto.getData().toByteArray()
+                vectorClockSerializer.fromProto(proto.getVectorClock()),
+                proto.getData()
             );
         }
 

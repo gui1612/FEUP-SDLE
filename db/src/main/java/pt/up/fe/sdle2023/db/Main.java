@@ -65,7 +65,7 @@ public class Main {
     private static void initializeConfig(Path configPath) {
         try {
             var config = new Config();
-            config.setCluster(List.of(new NodeConfig("example-node", "127.0.0.1", 6000)));
+            config.setCluster(List.of(new NodeConfig("example-node", "127.0.0.1", 6000, 2)));
 
             var writer = new ConfigWriter();
             writer.write(configPath, config);

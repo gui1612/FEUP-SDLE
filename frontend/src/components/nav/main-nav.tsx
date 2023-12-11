@@ -32,7 +32,7 @@ export function MainNav({
                                 </Link>
                             </div>
                             <Link
-                                to="/"
+                                to="/basket"
                                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
                             >
                                 ListHub

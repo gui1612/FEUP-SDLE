@@ -22,8 +22,8 @@ const router = createBrowserRouter(
                 />
                 <Route path="/usage" lazy={() => import("./src/pages/usage/route.tsx")} />
 
-                {/* TODO: Implement most things (UUID, etc.) */}
                 <Route path="/basket" lazy={() => import("./src/pages/basket/route.tsx")} />
+                <Route path="/shopping-list/:id" lazy={() => import("./src/pages/shopping-list/route.tsx")} />
             </Route>
         </>
     ),

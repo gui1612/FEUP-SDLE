@@ -11,6 +11,10 @@ class SingleItem  {
         this.bought = bought;
     }
 
+    static createItem(id: string): SingleItem {
+        return new SingleItem(id, new EWFlag<string>(id));
+    }
+
     merge(item: SingleItem, deep = true): void {
         this.bought.merge(item.bought, deep);
     }
@@ -43,6 +47,10 @@ class MultiItem {
         this.cartItems = cartItems;
         this.boughtItems = boughtItems;
     }
+
+    static createItem(id: string): MultiItem {
+        return new MultiItem(id, new CCounter<string>(id), new CCounter<string>(id));
+    }   
 
     merge(item: MultiItem, deep = true): void {
         this.cartItems.merge(item.cartItems, deep);

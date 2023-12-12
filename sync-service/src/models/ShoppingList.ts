@@ -5,6 +5,7 @@ import { EWFlag } from "../../lib/crdts/EWFlag";
 import { MultiItem, SingleItem } from "./Item";
 
 type ListItem = SingleItem | MultiItem;
+type itemType = "single" | "multi";
 
 class ShoppingList {
     private uuid: string;
@@ -29,6 +30,13 @@ class ShoppingList {
         const items = new AWORMap<string, ListItem, string>(id, undefined, undefined, dots);
 
         return new ShoppingList(id, listName, items, dots);
+    }
+
+    addItem(id: string, type: itemType = "single"): ListItem {
+        const item: ListItem = type === "single" ? SingleItem.createItem(id) : MultiItem.createItem(id);
+        this.items.set(id, item);
+
+        return item;
     }
 
     get id(): string {

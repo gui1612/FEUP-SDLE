@@ -3,7 +3,6 @@ import { ShoppingList } from "../models/ShoppingList";
 import { v4 as uuidv4 } from "uuid";
 import { version as uuidVersion } from "uuid";
 import { validate as uuidValidate } from "uuid";
-import { log } from "console";
 
 function uuidValidateV4(uuid: string): boolean {
     return uuidValidate(uuid) && uuidVersion(uuid) === 4;

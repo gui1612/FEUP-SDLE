@@ -30,13 +30,13 @@ class MVRegister<K, T> {
     }
 
 
-    merge(ew: MVRegister<K, T>, deep = true): boolean {
+    merge(ew: MVRegister<K, T>, deep = true): Set<T> {
         this.awset.merge(ew.awset, deep);
 
         return this.value;
     }
 
-    reset(): boolean {
+    reset(): Set<T> {
         this.awset.reset();
 
         return this.value;

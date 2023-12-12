@@ -53,10 +53,6 @@ class MultiItem {
         return new MultiItem(id, this.cartItems, this.boughtItems);
     }
 
-    // toJSON() {
-    //     return [this.id, this.cartItems.toJSON(), this.boughtItems.toJSON()];
-    // }
-
     toJSON() : {
         type: "multi";
         id: string;

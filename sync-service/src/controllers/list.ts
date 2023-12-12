@@ -26,6 +26,12 @@ export const getList = (req: Request, res: Response) => {
 
 export const createList = (req: Request, res: Response) => {
     const uuid = uuidv4();
+    const name = req.body.name;
+
+    if (lists[uuid])
+        return res.status(500).json({ error: `UUID ${uuid} already exists` });
+
+    lists[uuid] = new ShoppingList(uuid, name);
 
 
     // Logic to create a new list with a random UUID
@@ -34,9 +40,15 @@ export const createList = (req: Request, res: Response) => {
 };
 
 export const deleteList = (req: Request, res: Response) => {
-    res.send("delete list");
-    // Logic to delete the list with the specified UUID
-    // ...
+    const uuid = req.params.uuid;
+
+    if (!uuidValidateV4(uuid))
+        return res.status(400).json({ error: "Invalid UUID Format" });
+
+    if (!lists[uuid])
+        return res.status(404).json({ error: `List with UUID ${uuid} not found` });
+
+    delete lists[uuid];
 };
 
 export const updateList = (req: Request, res: Response) => {

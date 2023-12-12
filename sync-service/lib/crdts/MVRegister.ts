@@ -17,8 +17,8 @@ class MVRegister<K, T> {
         this.awset = new AWSetHelper(id, dots, set);
     }
 
-    get value(): boolean {
-        return this.awset.values.size > 0;
+    get value(): Set<T> {
+        return this.awset.values;
     }
 
     clone(id: K): MVRegister<K, T> {

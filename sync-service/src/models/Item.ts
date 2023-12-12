@@ -63,9 +63,6 @@ class MultiItem {
     }
 
     buyItems(amount: number): MultiItem {
-        // When you buy N items, you decrement N items from the cart and increment N items in the bought list
-
-        this.requestedItems.dec(amount);
         this.boughtItems.inc(amount);
 
         return this;

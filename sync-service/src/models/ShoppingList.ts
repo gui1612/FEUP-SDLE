@@ -24,6 +24,10 @@ class ShoppingList {
         this.dots = dots;
     }
 
+    get id(): string {
+        return this.uuid;
+    }
+
     merge(list: ShoppingList, deep = true): void {
         this.items.merge(list.items, deep);
 
@@ -53,8 +57,7 @@ class ShoppingList {
         };
     }
 
-    // create a function with an argument that is SHoppingList toJSON result
-    fromJSON(json: ReturnType<ShoppingList["toJSON"]>) {
+    static fromJSON(json: ReturnType<ShoppingList["toJSON"]>) {
         const uuid = json.uuid;
         const listName = json.name;
         const dots: DotContext<string> = new DotContext(json.dots);

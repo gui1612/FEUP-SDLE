@@ -52,7 +52,10 @@ export const deleteList = (req: Request, res: Response) => {
 };
 
 export const updateList = (req: Request, res: Response) => {
-    res.send("update list");
-    // Logic to update the list with the specified UUID using CRDT data
-    // ...
+    const jsonList = req.body;
+    const crdt = ShoppingList.fromJSON(jsonList);
+
+    lists[crdt.id] = lists[crdt.id].merge(crdt);
+
+    res.json(lists[crdt.id]);
 };

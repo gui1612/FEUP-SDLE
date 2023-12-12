@@ -11,6 +11,11 @@ class SingleItem  {
         this.bought = bought;
     }
 
+    buyItem(): SingleItem {
+        this.bought.enable();
+        return this;
+    }
+
     static createItem(id: string): SingleItem {
         return new SingleItem(id, new EWFlag<string>(id));
     }
@@ -39,12 +44,12 @@ class SingleItem  {
 
 class MultiItem {
     public id: string; 
-    private cartItems: CCounter<string>;
+    private requestedItems: CCounter<string>;
     private boughtItems: CCounter<string>;
 
     constructor(id: string, cartItems: CCounter<string>, boughtItems: CCounter<string>) {
         this.id = id;
-        this.cartItems = cartItems;
+        this.requestedItems = cartItems;
         this.boughtItems = boughtItems;
     }
 
@@ -53,12 +58,27 @@ class MultiItem {
     }   
 
     merge(item: MultiItem, deep = true): void {
-        this.cartItems.merge(item.cartItems, deep);
+        this.requestedItems.merge(item.requestedItems, deep);
         this.boughtItems.merge(item.boughtItems, deep);
     }
 
+    buyItems(amount: number): MultiItem {
+        // When you buy N items, you decrement N items from the cart and increment N items in the bought list
+
+        this.requestedItems.dec(amount);
+        this.boughtItems.inc(amount);
+
+        return this;
+    }
+
+    requestItems(amount: number): MultiItem {
+        this.requestedItems.inc(amount);
+
+        return this;
+    }
+
     clone(id: string): MultiItem {
-        return new MultiItem(id, this.cartItems, this.boughtItems);
+        return new MultiItem(id, this.requestedItems, this.boughtItems);
     }
 
     toJSON() : {
@@ -70,7 +90,7 @@ class MultiItem {
         return {
             type: "multi",
             id: this.id, 
-            toBuy: this.cartItems.toJSON(),
+            toBuy: this.requestedItems.toJSON(),
             bought: this.boughtItems.toJSON()
         };
     }

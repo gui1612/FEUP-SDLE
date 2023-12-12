@@ -4,12 +4,14 @@ import {
   createList,
   deleteList,
   updateList,
-  debug
+  debug,
+  testFlow
 } from  '../controllers/list';
 
 const router = express.Router();
 
 router.get('/debug', debug);
+router.get('/test-flow', testFlow);
 router.get('/:uuid', getList);
 router.post('/', createList);
 router.delete('/:uuid', deleteList);

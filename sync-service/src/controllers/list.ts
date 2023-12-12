@@ -16,6 +16,10 @@ export const debug = (req: Request, res: Response) => {
     res.json(lists);
 }
 
+export const testFlow = (req: Request, res: Response) => {
+    res.send("Test Flow");
+}
+
 export const getList = (req: Request, res: Response) => {
     const uuid = req.params.uuid;
 
@@ -35,10 +39,19 @@ export const createList = (req: Request, res: Response) => {
     const uuid = uuidv4();
     const name = req.body.name;
 
+
     if (lists[uuid])
         return res.status(500).json({ error: `UUID ${uuid} already exists` });
 
+    // if name already exists, return error
+    for (const list of Object.values(lists)) {
+        if (list.listName === name)
+            return res.status(500).json({ error: `Name ${name} already exists` });
+    }
+
     const shoppingList = ShoppingList.createEmptyList(uuid, name);
+
+    // shoppingList.addItem("bananas")
 
     lists[uuid] = shoppingList;
 

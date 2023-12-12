@@ -25,37 +25,67 @@ class ShoppingList {
         this.dots = dots;
     }
 
-    static createEmptyList(id: string, listName: string): ShoppingList {
-        const dots = new DotContext<string>();
-        const items = new AWORMap<string, ListItem, string>(id, undefined, undefined, dots);
-
-        return new ShoppingList(id, listName, items, dots);
-    }
-
-    addItem(id: string, type: itemType = "single"): ListItem {
-        const item: ListItem = type === "single" ? SingleItem.createItem(id) : MultiItem.createItem(id);
-        this.items.set(id, item);
-
-        return item;
-    }
-
     get id(): string {
         return this.uuid;
     }
 
-    merge(list: ShoppingList, deep = true): void {
-        this.items.merge(list.items, deep);
-
-        if (deep) this.dots.merge(list.dots);
+    get name(): string {
+        return this.listName;
     }
 
-    add(item: ListItem): Map<string, ListItem> {
+    get itemList(): AWORMap<string, ListItem, string> {
+        return this.items;
+    }
+
+    getItem(id: string): ListItem {
+        const item = this.items.get(id);
+
+        if (!item) throw new Error(`Item with id ${id} not found`);
+
+        return item;
+    }
+
+    static createEmptyList(id: string, listName: string): ShoppingList {
+        const dots = new DotContext<string>();
+        const items = new AWORMap<string, ListItem, string>(
+            id,
+            undefined,
+            undefined,
+            dots
+        );
+
+        return new ShoppingList(id, listName, items, dots);
+    }
+
+    addItem(id: string, type: itemType = "single"): ShoppingList {
+        const item: ListItem =
+            type === "single"
+                ? SingleItem.createItem(id)
+                : MultiItem.createItem(id);
+        this.items.set(id, item);
+
+        return this;
+    }
+
+    addItemObj(item: ListItem): ShoppingList {
         const id = item.id;
         if (!this.items.values.has(id)) {
             this.items.set(id, item);
         }
 
-        return this.items.values;
+        return this;
+    }
+
+
+
+    merge(list: ShoppingList, deep = true): ShoppingList {
+        if (!list) return this;
+
+        this.items.merge(list.items, deep);
+
+        if (deep) this.dots.merge(list.dots);
+
+        return this;
     }
 
     toJSON(): {
@@ -76,12 +106,16 @@ class ShoppingList {
         const uuid = json.uuid;
         const listName = json.name;
         const dots: DotContext<string> = new DotContext(json.dots);
-        const items: AWORMap<string, ListItem, string> = new AWORMap<string, ListItem, string>(
+        const items: AWORMap<string, ListItem, string> = new AWORMap<
+            string,
+            ListItem,
+            string
+        >(
             json.uuid,
             undefined,
             json.items.map.map(([id, item]) => [
                 id,
-                
+
                 item.type === "multi"
                     ? new MultiItem(
                           id,
@@ -93,7 +127,7 @@ class ShoppingList {
                           new EWFlag(item.bought.id, undefined, dots)
                       ),
             ]),
-            undefined,
+            undefined
         );
 
         return new ShoppingList(uuid, listName, items, dots);

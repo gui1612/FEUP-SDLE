@@ -24,6 +24,13 @@ class ShoppingList {
         this.dots = dots;
     }
 
+    static createEmptyList(id: string, listName: string): ShoppingList {
+        const dots = new DotContext<string>();
+        const items = new AWORMap<string, ListItem, string>(id, undefined, undefined, dots);
+
+        return new ShoppingList(id, listName, items, dots);
+    }
+
     get id(): string {
         return this.uuid;
     }

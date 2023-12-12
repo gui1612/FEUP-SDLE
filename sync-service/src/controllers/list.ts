@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { ShoppingList } from "../models/ShoppingList";
 import { v4 as uuidv4 } from "uuid";
-import { version as uuidVersion } from 'uuid';
-import { validate as uuidValidate } from 'uuid';
+import { version as uuidVersion } from "uuid";
+import { validate as uuidValidate } from "uuid";
 
-function uuidValidateV4(uuid: string) : boolean {
-  return uuidValidate(uuid) && uuidVersion(uuid) === 4;
+function uuidValidateV4(uuid: string): boolean {
+    return uuidValidate(uuid) && uuidVersion(uuid) === 4;
 }
 
 // TODO: Change this to access the actual database
@@ -18,7 +18,9 @@ export const getList = (req: Request, res: Response) => {
         return res.status(400).json({ error: "Invalid UUID Format" });
 
     if (!lists[uuid])
-        return res.status(404).json({ error: `List with UUID ${uuid} not found` });
+        return res
+            .status(404)
+            .json({ error: `List with UUID ${uuid} not found` });
 
     const list = lists[uuid];
     res.json(list);
@@ -31,12 +33,11 @@ export const createList = (req: Request, res: Response) => {
     if (lists[uuid])
         return res.status(500).json({ error: `UUID ${uuid} already exists` });
 
-    lists[uuid] = new ShoppingList(uuid, name);
+    const shoppingList = ShoppingList.createEmptyList(uuid, name);
 
+    lists[uuid] = shoppingList;
 
-    // Logic to create a new list with a random UUID
-    res.send("create list");
-    // ...
+    res.json(shoppingList);
 };
 
 export const deleteList = (req: Request, res: Response) => {
@@ -46,7 +47,9 @@ export const deleteList = (req: Request, res: Response) => {
         return res.status(400).json({ error: "Invalid UUID Format" });
 
     if (!lists[uuid])
-        return res.status(404).json({ error: `List with UUID ${uuid} not found` });
+        return res
+            .status(404)
+            .json({ error: `List with UUID ${uuid} not found` });
 
     delete lists[uuid];
 };

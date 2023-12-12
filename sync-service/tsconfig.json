@@ -10,6 +10,7 @@
   "include": [
     "src/**/*.ts",
     "test/**/*.ts",
+    "lib/**/*.ts"
     ], // which files to compile
   "exclude": ["node_modules"], // which files to skip
 }

@@ -3,13 +3,19 @@ import { ShoppingList } from "../models/ShoppingList";
 import { v4 as uuidv4 } from "uuid";
 import { version as uuidVersion } from "uuid";
 import { validate as uuidValidate } from "uuid";
+import { log } from "console";
 
 function uuidValidateV4(uuid: string): boolean {
     return uuidValidate(uuid) && uuidVersion(uuid) === 4;
 }
 
 // TODO: Change this to access the actual database
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const lists: Record<string, any> = {};
+
+export const debug = (req: Request, res: Response) => {
+    res.json(lists);
+}
 
 export const getList = (req: Request, res: Response) => {
     const uuid = req.params.uuid;

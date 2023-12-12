@@ -4,13 +4,13 @@ import { DotContext } from "./DotContext";
 type DotVal<K, T> = [K, T, number];
 type DotSet<K, T> = Set<DotVal<K, T>>;
 
-class MVRegister<K> {
-    private awset: AWSetHelper<string, K>;
+class MVRegister<K, T> {
+    private awset: AWSetHelper<T, K>;
     public id: K;
 
     constructor(
         id: K,
-        set: DotSet<string, K> = new Set(),
+        set: DotSet<T, K> = new Set(),
         dots = new DotContext<K>()
     ) {
         this.id = id;
@@ -21,16 +21,16 @@ class MVRegister<K> {
         return this.awset.values.size > 0;
     }
 
-    clone(id: K): MVRegister<K> {
+    clone(id: K): MVRegister<K, T> {
         return new MVRegister(id, this.awset.getEntrySet(), this.awset.getCtx());
     }
 
-    assign(value: string) {
+    assign(value: T) {
         return this.awset.add(value);
     }
 
 
-    merge(ew: MVRegister<K>, deep = true): boolean {
+    merge(ew: MVRegister<K, T>, deep = true): boolean {
         this.awset.merge(ew.awset, deep);
 
         return this.value;
@@ -44,7 +44,7 @@ class MVRegister<K> {
 
     toJSON() : {
         id: K;
-        awset: ReturnType<AWSetHelper<string, K>["toJSON"]>;
+        awset: ReturnType<AWSetHelper<T, K>["toJSON"]>;
     } {
         return {
             id: this.id, 

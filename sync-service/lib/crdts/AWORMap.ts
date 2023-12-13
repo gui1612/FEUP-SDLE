@@ -66,7 +66,7 @@ class AWORMap<N, V extends CRDTInterface<N, V, unknown, K>, K> {
             // @ts-expect-error TS can not infer the type of an union of CRDTs
             this.map.set(key, value.clone(this.id));
         } else {
-            this.map.get(key).merge(value, deep);
+            this.map.get(key)!.merge(value, deep);
         }
 
         return this.values;
@@ -89,7 +89,7 @@ class AWORMap<N, V extends CRDTInterface<N, V, unknown, K>, K> {
         for (const [key, value] of aw.values) {
             if (this.awset.values.has(key)) {
                 this.set(key, value, false);
-                this.get(key).id = this.id;
+                this.get(key)!.id = this.id;
             }
         }
 

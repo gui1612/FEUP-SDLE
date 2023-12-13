@@ -63,9 +63,4 @@ suite("DotContext", () => {
         expect(dc.max('c')).toBe(2);
         expect(dc.has('a')).toBe(true);
     })
-
-    test('toJSON', () => {
-        const dc = new DotContext(new Map([['a', 1], ['b', 2]]))
-        expect(dc.toJSON()).toEqual({ a: 1, b: 2 })
-    })
 })

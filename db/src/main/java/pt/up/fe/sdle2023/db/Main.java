@@ -65,7 +65,20 @@ public class Main {
     private static void initializeConfig(Path configPath) {
         try {
             var config = new Config();
-            config.setCluster(List.of(new NodeConfig("example-node", "127.0.0.1", 6000, 2)));
+
+            config.setReplicationFactor(3);
+            config.setPreferenceListSize(4);
+            config.setReadConsistency(2);
+            config.setWriteConsistency(2);
+
+            config.setCluster(
+                List.of(
+                    new NodeConfig("example-node-1", "127.0.0.1", 6000, 2),
+                    new NodeConfig("example-node-2", "127.0.0.1", 6001, 5),
+                    new NodeConfig("example-node-3", "127.0.0.1", 6002, 3),
+                    new NodeConfig("example-node-4", "127.0.0.1", 6003, 1)
+                )
+            );
 
             var writer = new ConfigWriter();
             writer.write(configPath, config);

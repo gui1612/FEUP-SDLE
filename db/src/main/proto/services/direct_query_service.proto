@@ -1,11 +1,17 @@
 syntax = "proto3";
 import "google/protobuf/empty.proto";
 import "services/models.proto";
+import "models.proto";
 
 option java_package = "pt.up.fe.sdle2023.db.service";
 option java_outer_classname = "DirectQueryServiceProtos";
 
 service DirectQueryService {
-  rpc directGetEntry(GetRequest) returns (GetResponse) {}
-  rpc directPutEntry(PutRequest) returns (google.protobuf.Empty) {}
+  rpc directGetEntry(GetRequest) returns (StoredData) {}
+  rpc directPutEntry(PutRequestWithHint) returns (google.protobuf.Empty) {}
+}
+
+message PutRequestWithHint {
+  PutRequest request = 1;
+  optional string intended_recipient =  2;
 }

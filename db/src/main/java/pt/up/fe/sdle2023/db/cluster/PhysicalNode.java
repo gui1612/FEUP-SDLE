@@ -13,15 +13,17 @@ import java.util.Objects;
 
 public class PhysicalNode {
 
-    private final ManagedChannel channel;
     private final HealthManager healthManager = new HealthManager(1000);
-
-    private final Token token;
     private final List<VirtualNode> virtualNodes = new ArrayList<>();
 
+    private final String name;
+    private final Token token;
+    private final ManagedChannel channel;
+
     public PhysicalNode(NodeConfig nodeConfig) {
+        this.name = nodeConfig.getName();
+        this.token = Token.digestString(name);
         this.channel = createCommunicationChannel(nodeConfig.getHost(), nodeConfig.getPort());
-        this.token = Token.digestString(nodeConfig.getName());
 
         this.createVirtualNodes(nodeConfig.getCapacity());
     }
@@ -46,20 +48,24 @@ public class PhysicalNode {
         }
     }
 
-    public ManagedChannel getChannel() {
-        return channel;
-    }
-
     public HealthManager getHealthManager() {
         return healthManager;
+    }
+
+    public List<VirtualNode> getVirtualNodes() {
+        return virtualNodes;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Token getToken() {
         return token;
     }
 
-    public List<VirtualNode> getVirtualNodes() {
-        return virtualNodes;
+    public ManagedChannel getChannel() {
+        return channel;
     }
 
     @Override

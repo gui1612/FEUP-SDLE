@@ -23,3 +23,8 @@ message PutRequest {
   string key = 2;
   bytes value = 3;
 }
+
+message HintedHandoffs {
+  string physicalNodeName = 1;
+  repeated PutRequest requests = 2;
+}

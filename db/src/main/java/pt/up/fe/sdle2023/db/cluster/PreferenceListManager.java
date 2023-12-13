@@ -10,10 +10,21 @@ import java.util.stream.Stream;
 
 public class PreferenceListManager {
     private final SortedMap<Token, VirtualNode> virtualNodes = new TreeMap<>();
-    private final Config config;
 
-    public PreferenceListManager(Config config) {
-        this.config = config;
+    private final int preferenceListSize;
+
+    public PreferenceListManager(PhysicalNodeRegistry physicalNodeRegistry, int preferenceListSize) {
+        this.preferenceListSize = preferenceListSize;
+
+        physicalNodeRegistry.getPhysicalNodes().forEach(this::addNode);
+    }
+
+    private void addNode(PhysicalNode node) {
+        virtualNodes.putAll(
+            node.getVirtualNodes()
+                .stream()
+                .collect(Collectors.toMap(VirtualNode::getToken, Function.identity()))
+        );
     }
 
     public List<PhysicalNode> getPreferenceList(Token key) {
@@ -24,20 +35,7 @@ public class PreferenceListManager {
                         virtualNodes.headMap(key).sequencedValues().stream()) // less than key
                 .map(VirtualNode::getPhysicalNode)
                 .filter(addedPhysicalNodes::add)
-                .limit(config.getPreferenceListSize())
+                .limit(preferenceListSize)
                 .toList();
-    }
-
-    public void addNode(PhysicalNode node) {
-        virtualNodes.putAll(
-                node.getVirtualNodes()
-                        .stream()
-                        .collect(Collectors.toMap(VirtualNode::getToken, Function.identity()))
-        );
-    }
-
-    public void removeNode(PhysicalNode node) {
-        for (var virtualNode : node.getVirtualNodes())
-            virtualNodes.remove(virtualNode.getToken());
     }
 }

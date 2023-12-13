@@ -5,6 +5,8 @@ import com.google.protobuf.Parser;
 import pt.up.fe.sdle2023.db.model.ModelProtos;
 import pt.up.fe.sdle2023.db.model.ProtoSerializer;
 
+import java.util.Objects;
+
 public class StoredDataVersion {
 
     private final VectorClock vectorClock;

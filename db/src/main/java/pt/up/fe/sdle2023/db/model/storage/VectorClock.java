@@ -7,8 +7,9 @@ import pt.up.fe.sdle2023.db.model.Token;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-public class VectorClock {
+public class VectorClock implements Comparable<VectorClock> {
 
     private final Map<Token, Long> clock = new HashMap<>();
 
@@ -50,6 +51,7 @@ public class VectorClock {
         return newClock;
     }
 
+
     public long getCounter(Token node) {
         return this.clock.getOrDefault(node, 0L);
     }
@@ -59,6 +61,17 @@ public class VectorClock {
         newClock.clock.put(node, counter);
 
         return newClock;
+    }
+
+    @Override
+    public int compareTo(VectorClock other) {
+        if (this.isAncestor(other)) {
+            return -1;
+        } else if (other.isAncestor(this)) {
+            return 1;
+        }
+
+        return 0;
     }
 
     public VectorClock incrementCounter(Token node) {

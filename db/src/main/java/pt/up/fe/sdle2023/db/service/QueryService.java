@@ -8,19 +8,25 @@ import pt.up.fe.sdle2023.db.cluster.OperationCoordinator;
 import pt.up.fe.sdle2023.db.cluster.PhysicalNode;
 import pt.up.fe.sdle2023.db.cluster.PreferenceListManager;
 import pt.up.fe.sdle2023.db.model.Token;
+import pt.up.fe.sdle2023.db.model.storage.StoredData;
+import pt.up.fe.sdle2023.db.model.storage.StoredDataVersion;
 import pt.up.fe.sdle2023.db.model.storage.VectorClock;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class QueryService extends QueryServiceGrpc.QueryServiceImplBase {
 
     private static final Status NO_COORDINATOR = Status.UNAVAILABLE.withDescription("No coordinator available");
 
+    private final StoredDataVersion.Serializer storedDataVersionSerializer = new StoredDataVersion.Serializer();
     private final VectorClock.Serializer vectorClockSerializer = new VectorClock.Serializer();
 
     private final PreferenceListManager preferenceListManager;
@@ -70,17 +76,21 @@ public class QueryService extends QueryServiceGrpc.QueryServiceImplBase {
 
                     var responses = responsesOptional.get();
 
+                    var collectedVersions = responses.stream()
+                        .flatMap(response -> response.getVersionsList().stream())
+                        .map(storedDataVersionSerializer::fromProto)
+                        .toList();
+
+                    var collectedStoredData = new StoredData(collectedVersions).compact();
+
                     // Create a new vector clock that merges all the versions
-                    var newClock = responses.stream()
-                        .map(ServiceProtos.GetResponse::getContext)
-                        .map(ServiceProtos.Context::getVectorClock)
-                        .map(vectorClockSerializer::fromProto)
+                    var newClock = collectedStoredData.getVersions()
+                        .stream()
+                        .map(StoredDataVersion::getVectorClock)
                         .reduce(
                             new VectorClock(),
                             VectorClock::merge
-                        )
-                        // Increment the counter for the coordinator node
-                        .incrementCounter(operationCoordinator.getCoordinatorNode().getToken());
+                        );
 
                     // Create the context from the new vector clock
                     var context = ServiceProtos.Context.newBuilder()
@@ -91,9 +101,9 @@ public class QueryService extends QueryServiceGrpc.QueryServiceImplBase {
                     var responseBuilder = ServiceProtos.GetResponse.newBuilder()
                         .setContext(context);
 
-                    responses.stream()
-                        .map(ServiceProtos.GetResponse::getValuesList)
-                        .flatMap(List::stream)
+                    collectedStoredData.getVersions()
+                        .stream()
+                        .map(StoredDataVersion::getData)
                         .forEach(responseBuilder::addValues);
 
                     responseObserver.onNext(responseBuilder.build());
@@ -120,6 +130,17 @@ public class QueryService extends QueryServiceGrpc.QueryServiceImplBase {
             preferenceList -> {
                 // Run as coordinator
                 try {
+                    var requestVectorClock = vectorClockSerializer.fromProto(request.getContext().getVectorClock());
+                    requestVectorClock.incrementCounter(operationCoordinator.getCoordinatorNode().getToken());
+
+                    var newRequest = ServiceProtos.PutRequest.newBuilder(request)
+                        .setContext(
+                            ServiceProtos.Context.newBuilder()
+                                .setVectorClock(vectorClockSerializer.toProto(requestVectorClock))
+                                .build()
+                        )
+                        .build();
+
                     var responsesOptional = operationCoordinator.coordinatePut(preferenceList, request);
                     if (responsesOptional.isEmpty()) {
                         responseObserver.onError(

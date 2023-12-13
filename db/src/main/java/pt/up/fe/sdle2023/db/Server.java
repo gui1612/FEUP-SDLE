@@ -6,13 +6,16 @@ import org.rocksdb.RocksDBException;
 import org.w3c.dom.Node;
 import pt.up.fe.sdle2023.db.cluster.OperationCoordinator;
 import pt.up.fe.sdle2023.db.cluster.PhysicalNode;
+import pt.up.fe.sdle2023.db.cluster.PhysicalNodeRegistry;
 import pt.up.fe.sdle2023.db.cluster.PreferenceListManager;
 import pt.up.fe.sdle2023.db.config.data.Config;
 import pt.up.fe.sdle2023.db.config.data.NodeConfig;
 import pt.up.fe.sdle2023.db.model.Token;
+import pt.up.fe.sdle2023.db.repository.HintedHandoffsRepository;
 import pt.up.fe.sdle2023.db.repository.RepositoryOperationFailedException;
 import pt.up.fe.sdle2023.db.repository.StoredDataRepository;
 import pt.up.fe.sdle2023.db.service.DirectQueryService;
+import pt.up.fe.sdle2023.db.service.HintedHandoffsService;
 import pt.up.fe.sdle2023.db.service.QueryService;
 
 import java.io.IOException;
@@ -29,7 +32,9 @@ public class Server {
     private final NodeConfig nodeConfig;
 
     private StoredDataRepository storedDataRepository;
+    private HintedHandoffsRepository hintedHandoffsRepository;
 
+    private PhysicalNodeRegistry physicalNodeRegistry;
     private PreferenceListManager preferenceListManager;
     private PhysicalNode currentNode;
 
@@ -48,24 +53,26 @@ public class Server {
         Files.createDirectories(dataPath);
 
         this.storedDataRepository = new StoredDataRepository(dataPath);
+        this.hintedHandoffsRepository = new HintedHandoffsRepository(dataPath);
     }
 
     private void initializeNodes() {
-        this.preferenceListManager = new PreferenceListManager(config);
-
+        this.physicalNodeRegistry = new PhysicalNodeRegistry();
         for (var nodeConfig : config.getCluster()) {
             var physicalNode = new PhysicalNode(nodeConfig);
-            this.preferenceListManager.addNode(physicalNode);
+            this.physicalNodeRegistry.addPhysicalNode(physicalNode);
 
-            if (this.nodeConfig.equals(nodeConfig)) {
+            if (nodeConfig.equals(this.nodeConfig)) {
                 this.currentNode = physicalNode;
-                break;
             }
         }
+
+        this.preferenceListManager = new PreferenceListManager(physicalNodeRegistry, config.getPreferenceListSize());
     }
 
     private void closeRepositories() {
         this.storedDataRepository.close();
+        this.hintedHandoffsRepository.close();
     }
 
     public void run() throws InterruptedException {
@@ -73,7 +80,10 @@ public class Server {
             this.initializeRepositories();
             this.initializeNodes();
 
-            var directQueryService = new DirectQueryService(storedDataRepository);
+            var hintedHandoffsService = new HintedHandoffsService(physicalNodeRegistry, hintedHandoffsRepository);
+            GlobalExecutor.getExecutor().execute(hintedHandoffsService);
+
+            var directQueryService = new DirectQueryService(storedDataRepository, hintedHandoffsRepository);
 
             var operationCoordinator = new OperationCoordinator(config, directQueryService, currentNode);
             var queryService = new QueryService(preferenceListManager, operationCoordinator);

@@ -4,20 +4,41 @@ import com.google.protobuf.Parser;
 import pt.up.fe.sdle2023.db.model.ModelProtos;
 import pt.up.fe.sdle2023.db.model.ProtoSerializer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class StoredData {
 
     private final List<StoredDataVersion> versions;
 
-    public StoredData(List<StoredDataVersion> versions) {
-        this.versions = Collections.unmodifiableList(versions);
+    public StoredData(Collection<StoredDataVersion> versions) {
+        this.versions = new ArrayList<>(versions);
     }
 
     public List<StoredDataVersion> getVersions() {
-        return versions;
+        return Collections.unmodifiableList(versions);
+    }
+
+    public StoredData compact() {
+        var currentVersions = new ArrayList<>(versions);
+
+        var comparator = Comparator.comparing(StoredDataVersion::getVectorClock, VectorClock::compareTo);
+        currentVersions.sort(comparator.reversed());
+
+        var compactedVersions = new ArrayList<StoredDataVersion>();
+
+        for (var version : currentVersions) {
+            var versionClock = version.getVectorClock();
+
+            var isAncestorOfElement = compactedVersions.stream()
+                    .anyMatch(compactedVersion -> versionClock.isAncestor(compactedVersion.getVectorClock()));
+
+            if (!isAncestorOfElement) {
+                compactedVersions.add(version);
+            }
+        }
+
+        return new StoredData(compactedVersions);
     }
 
     public static class Serializer implements ProtoSerializer<StoredData, ModelProtos.StoredData> {

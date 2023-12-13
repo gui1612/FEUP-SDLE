@@ -11,25 +11,26 @@ x-cluster-db: &cluster-db
   configs:
     - cluster-config
   network_mode: host
+  environment:
+    - CONFIG_PATH=/cluster-config
 
 services:
   cluster-db-1:
     <<: *cluster-db
     command: start cluster-db-1
-    environment:
-      - PORT=6001
-      - CONFIG_PATH=/cluster-config
 
   cluster-db-2:
     <<: *cluster-db
     command: start cluster-db-2
-    environment:
-      - PORT=6002
-      - CONFIG_PATH=/cluster-config
 
   cluster-db-3:
     <<: *cluster-db
     command: start cluster-db-3
-    environment:
-      - PORT=6003
-      - CONFIG_PATH=/cluster-config
+
+  cluster-db-4:
+    <<: *cluster-db
+    command: start cluster-db-4
+
+  cluster-db-5:
+    <<: *cluster-db
+    command: start cluster-db-5

@@ -1,12 +1,30 @@
+replicationFactor: 3
+preferenceListSize: 4
+readConsistency: 2
+writeConsistency: 2
+
 cluster:
   - name: cluster-db-1
     host: localhost
     port: 6001
+    capacity: 4
 
   - name: cluster-db-2
     host: localhost
     port: 6002
+    capacity: 2
 
   - name: cluster-db-3
     host: localhost
     port: 6003
+    capacity: 2
+
+  - name: cluster-db-4
+    host: localhost
+    port: 6004
+    capacity: 2
+
+  - name: cluster-db-5
+    host: localhost
+    port: 6005
+    capacity: 2

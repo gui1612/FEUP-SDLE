@@ -51,7 +51,7 @@ class DotContext<K> {
     }
 
     toJSON() {
-        return Object.fromEntries(this.cc);
+        return this.cc.entries;
     }
 }
 

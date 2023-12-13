@@ -11,14 +11,23 @@ export default defineConfig({
       filename: 'service-worker.ts',
       strategies: 'injectManifest',
 
+      base: "/",
+
       devOptions: {
         enabled: true,
-        type: "module"
+        type: "module",
+        navigateFallback: "index.html",
       },
 
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,json}']
+        globPatterns: ["**/*"],
+        navigateFallback: "index.html",
       },
+      // add this to cache all the
+      // static assets in the public folder
+      includeAssets: [
+          "**/*",
+      ],
 
       manifest: {
         name: 'SuperBasket',

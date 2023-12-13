@@ -74,6 +74,7 @@ export function ShoppingList({ listId }: { listId: string }) {
             if (!name || !type) return;
 
             addProductToList.mutate({ name, type });
+            newProductFormRef.current!.reset();
           }}
         >
           <Input

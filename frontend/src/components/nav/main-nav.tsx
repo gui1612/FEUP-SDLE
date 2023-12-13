@@ -31,7 +31,7 @@ export function MainNav({
                                 </Link>
                             </div>
                             <Link
-                                to="/basket"
+                                to="/"
                                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
                             >
                                 SuperBasket
@@ -40,7 +40,7 @@ export function MainNav({
 
                         <Link
                             to="/about"
-                            className="text-sm font-medium transition-colors hover:text-primary"
+                            className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
                         >
                             About Us
                         </Link>

@@ -105,7 +105,7 @@ class ShoppingList {
     static fromJSON(json: ReturnType<ShoppingList["toJSON"]>) {
         const uuid = json.uuid;
         const listName = json.name;
-        const dots: DotContext<string> = new DotContext(json.dots);
+        const dots: DotContext<string> = new DotContext(new Map(Object.entries(json.dots)));
         const items: AWORMap<string, ListItem, string> = new AWORMap<
             string,
             ListItem,

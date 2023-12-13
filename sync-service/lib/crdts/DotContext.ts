@@ -42,16 +42,16 @@ class DotContext<K> {
     toString(): string {
         let output = "Context:";
         output += " CC ( ";
-        for (const [key, value] of this.cc.entries()) {
+        for (const [key, value] of this.cc.entries())
             output += `${key}:${value} `;
-        }
+
         output += ")";
 
         return output;
     }
 
     toJSON() {
-        return this.cc.entries;
+        return Object.fromEntries(this.cc.entries());
     }
 }
 

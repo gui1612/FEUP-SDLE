@@ -78,7 +78,6 @@ class CCounter<K> {
         id: K;
         awset: ReturnType<AWSetHelper<number, K>["toJSON"]>;
     } {
-    //[K, ReturnType<AWSetHelper<number, K>["toJSON"]>] {
         return {
             id: this.id, 
             awset: this.awset.toJSON()

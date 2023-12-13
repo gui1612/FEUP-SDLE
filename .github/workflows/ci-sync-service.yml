@@ -50,5 +50,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Lint Code
+      - name: Run Tests
         run: pnpm run test

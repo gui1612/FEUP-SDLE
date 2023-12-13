@@ -1,6 +1,5 @@
 import { cn } from "@/src/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
-import { Search } from "../search/search";
 import { ModeToggle } from "../theme/mode-toggle";
 import { Link } from "react-router-dom";
 
@@ -54,7 +53,6 @@ export function MainNav({
                     </nav>
                 </div>
                 <div className="ml-auto flex items-center space-x-4">
-                    <Search />
                     <ModeToggle />
                 </div>
             </div>

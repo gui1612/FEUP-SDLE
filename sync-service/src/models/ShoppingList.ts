@@ -76,6 +76,11 @@ class ShoppingList {
         return this;
     }
 
+    removeItem(id: string): ShoppingList {
+        this.items.remove(id);
+        return this;
+    }
+
 
 
     merge(list: ShoppingList, deep = true): ShoppingList {
@@ -119,15 +124,15 @@ class ShoppingList {
                 item.type === "multi"
                     ? new MultiItem(
                           id,
-                          new CCounter(item.toBuy.id, undefined, dots),
-                          new CCounter(item.toBuy.id, undefined, dots)
+                          new CCounter(item.toBuy.id, new Set(item.toBuy.awset), dots),
+                          new CCounter(item.bought.id, new Set(item.bought.awset), dots)
                       )
                     : new SingleItem(
                           id,
-                          new EWFlag(item.bought.id, undefined, dots)
+                          new EWFlag(item.bought.id, new Set(item.bought.awset), dots)
                       ),
             ]),
-            undefined
+            new DotContext()
         );
 
         return new ShoppingList(uuid, listName, items, dots);

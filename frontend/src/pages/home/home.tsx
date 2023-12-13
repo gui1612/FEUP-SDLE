@@ -1,40 +1,43 @@
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
-import { AWORMap } from "@/src/lib/crdts/AWORMap";
-import { DotContext } from "@/src/lib/crdts/DotContext";
 import { ShoppingList } from "@/src/lib/models/ShoppingList";
 import { addShoppingList, getShoppingLists, removeShoppingList } from "@/src/lib/utils/db";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import localforage from "localforage";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 
 export function Home() {
 
   const queryClient = useQueryClient();
-  const { status, data } = useQuery({ queryKey: ["lists"], queryFn: getShoppingLists });
+  const { status, data } = useQuery({
+    throwOnError: true,
+    queryKey: ["lists"],
+    queryFn: getShoppingLists
+  });
 
   const createNewList = useMutation({
+    throwOnError: true,
     mutationFn: async (name: string) => {
       const uuid = crypto.randomUUID();
-      const shoppingList = new ShoppingList(uuid, name, new AWORMap<string, any, string>(uuid.toString()), new DotContext());
+      const shoppingList = ShoppingList.createEmptyList(uuid, name);
 
       await addShoppingList(shoppingList);
-      await queryClient.invalidateQueries({ queryKey: ["lists"] });
+      queryClient.invalidateQueries({ queryKey: ["lists"] });
     }
   })
 
   const deleteList = useMutation({
+    throwOnError: true,
     mutationFn: async (id: string) => {
       await removeShoppingList(id);
-      await queryClient.invalidateQueries({ queryKey: ["lists"] });
+      queryClient.invalidateQueries({ queryKey: ["lists"] });
     }
   })
 
   const ref = useRef<HTMLFormElement>(null);
 
   return (
-    <main className="p-8 min-h-[calc(100vh_-_10rem)] max-w-3xl">
+    <main className="p-8 min-h-[calc(100vh_-_10rem)] max-w-3xl mx-auto">
         <h2 className="text-3xl font-bold">Your lists</h2>
         <article className="mt-4">
             <p>

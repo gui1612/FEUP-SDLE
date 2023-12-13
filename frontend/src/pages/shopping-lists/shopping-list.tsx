@@ -1,167 +1,116 @@
-import React, { useState, useEffect } from "react";
-import { Button } from "@/src/components/ui/button";
+import { useCallback, useRef } from "react";
 import { Input } from "@/src/components/ui/input";
-import { getShoppingList, saveShoppingList } from "@/src/lib/utils/db";
+import { getShoppingList, updateShoppingList } from "@/src/lib/utils/db";
 import CopyToClipboardButton from "@/src/components/ui/copy-to-clipboard";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ForIterator } from "@/src/components/utils/iterator";
+import { Select, SelectContent, SelectTrigger, SelectValue, SelectItem } from "@/src/components/ui/select";
+import { Button } from "@/src/components/ui/button";
+import { MultipleItemRow, SingleItemRow } from "./list-item";
 
 export function ShoppingList({ listId }: { listId: string }) {
-  const {status, data: shoppingList, error} = useQuery({queryKey: ["lists", listId], queryFn: async () => await getShoppingList(listId)})
-  const [newItemName, setNewItemName] = useState("");
+  const newProductFormRef = useRef<HTMLFormElement>(null);
+  
+  const queryClient = useQueryClient();
+  const invalidateList = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["lists", listId] });
+  }, [queryClient, listId]);
 
-  // useEffect(() => {
-  //   async function fetchShoppingList() {
-  //     try {
-  //       const fetchedList = await getShoppingList(listId);
-  //       if (fetchedList) {
-  //         setShoppingList(fetchedList);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching shopping list:", error);
-  //     }
-  //   }
+  const { status, data: shoppingList, error } = useQuery({
+    throwOnError: true,
+    queryKey: ["lists", listId],
+    queryFn: async () => await getShoppingList(listId)
+  })
 
-  //   fetchShoppingList();
-  // }, [listId]);
+  const updateList = useMutation({
+    throwOnError: true,
+    mutationFn: async () => {
+      if (!shoppingList) return;
 
-  // const handleIncrement = (productName: string) => {
-  //   setShoppingList((prevShoppingList) => {
-  //     const updatedProducts = prevShoppingList.products.map((product) => {
-  //       if (product.name === productName) {
-  //         return { ...product, quantity: product.quantity + 1 };
-  //       }
-  //       return product;
-  //     });
+      await updateShoppingList(shoppingList);
+      invalidateList();
+    }
+  })
 
-  //     const updatedShoppingList = {
-  //       ...prevShoppingList,
-  //       products: updatedProducts,
-  //     };
+  const addProductToList = useMutation({
+    throwOnError: true,
+    mutationFn: async ({ name, type }: { name: string, type: "single" | "multi" }) => {
+      if (!shoppingList) return;
 
-  //     saveShoppingList(updatedShoppingList);
-
-  //     return updatedShoppingList;
-  //   });
-  // };
-
-  // const handleDecrement = (productName: string) => {
-  //   setShoppingList((prevShoppingList) => {
-  //     const updatedProducts = prevShoppingList.products.map((product) => {
-  //       if (product.name === productName) {
-  //         const updatedQuantity = Math.max(0, product.quantity - 1);
-  //         return { ...product, quantity: updatedQuantity };
-  //       }
-  //       return product;
-  //     });
-
-  //     const updatedShoppingList = {
-  //       ...prevShoppingList,
-  //       products: updatedProducts.filter((product) => product.quantity > 0),
-  //     };
-
-  //     saveShoppingList(updatedShoppingList);
-
-  //     return updatedShoppingList;
-  //   });
-  // };
-
-  // const handleAddItem = () => {
-  //   if (newItemName.trim() === "") {
-  //     return; // Do not add empty items
-  //   }
-
-  //   setShoppingList((prevShoppingList) => {
-  //     const existingProductIndex = prevShoppingList.products.findIndex(
-  //       (product) => product.name === newItemName
-  //     );
-
-  //     if (existingProductIndex !== -1) {
-  //       // Product already exists, increment its quantity
-  //       const updatedProducts = [...prevShoppingList.products];
-  //       updatedProducts[existingProductIndex].quantity += 1;
-
-  //       const updatedShoppingList = {
-  //         ...prevShoppingList,
-  //         products: updatedProducts,
-  //       };
-
-  //       saveShoppingList(updatedShoppingList);
-
-  //       return updatedShoppingList;
-  //     } else {
-  //       // Product doesn't exist, add a new product
-  //       const newProduct = { name: newItemName, quantity: 1 };
-  //       const updatedShoppingList = {
-  //         ...prevShoppingList,
-  //         products: [...prevShoppingList.products, newProduct],
-  //       };
-
-  //       saveShoppingList(updatedShoppingList);
-
-  //       return updatedShoppingList;
-  //     }
-  //   });
-
-  //   setNewItemName("");
-  // };
-
-  // const handleNewItemNameChange = (
-  //   event: React.ChangeEvent<HTMLInputElement>
-  // ) => {
-  //   setNewItemName(event.target.value);
-  // };
-
-  // const handleAddItemKeyPress = (
-  //   event: React.KeyboardEvent<HTMLInputElement>
-  // ) => {
-  //   if (event.key === "Enter") {
-  //     handleAddItem();
-  //   }
-  // };
+      shoppingList.addItem(name, type);
+      await updateList.mutateAsync();
+    }
+  });
 
   if (status === "pending") {
-    return <div>Loading...</div>;
+    return <p>Loading...</p>;
   }
 
   if (status === "error") {
-    return <div>Error: {error.message}</div>;
+    return <p>Error: {error.message}</p>;
+  }
+
+  if (!shoppingList) {
+    return <p>Shopping list not found</p>;
   }
 
   return (
-    <main className="flex p-24">
+    <main className="p-8 min-h-[calc(100vh_-_10rem)] max-w-5xl mx-auto">
       <div className="mr-8">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">{shoppingList.name}</h1>
           <CopyToClipboardButton/>
         </div>
 
-        <div className="flex items-center mb-4">
+        <form
+          ref={newProductFormRef}
+          className="flex items-center gap-2"
+          onSubmit={(ev) => {
+            ev.preventDefault();
+            const fd = new FormData(newProductFormRef.current!);
+            const name = fd.get("name") as string;
+            const type = fd.get("type") as "single" | "multi" | "";
+
+            if (!name || !type) return;
+
+            addProductToList.mutate({ name, type });
+          }}
+        >
           <Input
             type="text"
-            value={newItemName}
-            // onChange={handleNewItemNameChange}
-            // onKeyPress={handleAddItemKeyPress}
+            name="name"
             placeholder="Enter product name"
-            className="mr-2 p-2 border border-gray-300"
           />
-          {/* <Button onClick={handleAddItem}>Add Product</Button> */}
-        </div>
 
-        <ul className="list-none p-0">
-          {shoppingList.items.map((product, index) => (
-            <li key={index} className="flex justify-between items-center mb-2">
-              <div>{product.name}</div>
-              <div className="flex items-center">
-                {/* <Button onClick={() => handleDecrement(product.name)}> */}
-                  -
-                {/* </Button> */}
-                <span className="mx-2">{product.quantity}</span>
-                {/* <Button onClick={() => handleIncrement(product.name)}> */}
-                  +
-                {/* </Button> */}
-              </div>
-            </li>
-          ))}
+          <Select name="type">
+            <SelectTrigger className="grow-0 w-2/3">
+              <SelectValue placeholder="Choose an item type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="single">Single Item</SelectItem>
+              <SelectItem value="multi">Multiple Items</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Button>Add Product</Button>
+        </form>
+
+        <ul className="flex flex-col gap-2 mt-4">
+          <ForIterator
+            iterable={shoppingList.itemList.values}
+            render={([name, item]) => {
+              const removeItem = () => {
+                shoppingList.removeItem(name);
+                updateList.mutate();
+              };
+
+              return (
+                item._type === "single"
+                  ? <SingleItemRow key={`${name}-${item.enabled}`} name={name} item={item} onChange={updateList.mutate} onDelete={removeItem}/>
+                  : <MultipleItemRow key={`${name}-${item.bought}-${item.requested}`} name={name} item={item} onChange={updateList.mutate} onDelete={removeItem} />
+              )
+            }}
+          />
         </ul>
       </div>
     </main>

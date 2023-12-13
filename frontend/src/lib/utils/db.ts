@@ -29,7 +29,7 @@ export async function getShoppingList(shoppingListId: string): Promise<ShoppingL
 }
 
 export async function addShoppingList(shoppingList: ShoppingList): Promise<void> {
-  await localforage.setItem(`lists.${shoppingList.id}`, shoppingList.toJSON())
+  await updateShoppingList(shoppingList);
   
   const listIds = await localforage.getItem("lists") as string[] ?? [];
   listIds.push(shoppingList.id);
@@ -45,4 +45,8 @@ export async function removeShoppingList(shoppingListId: string): Promise<void> 
   listIds.splice(index, 1);
 
   await localforage.setItem("lists", listIds);
+}
+
+export async function updateShoppingList(shoppingList: ShoppingList): Promise<void> {
+  await localforage.setItem(`lists.${shoppingList.id}`, shoppingList.toJSON());
 }

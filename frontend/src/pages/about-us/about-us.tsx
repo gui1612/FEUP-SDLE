@@ -34,7 +34,7 @@ export function AboutUs() {
                             About Us
                         </h1>
                         <div className="text-left text-lg text-gray-400">
-                            <h2 className="text-2xl mb-6 font-bold text-white">
+                            <h2 className="text-2xl mb-6 font-bold">
                                 About Us:
                             </h2>
                             <h2 className="text-1xl mb-1">
@@ -48,7 +48,7 @@ export function AboutUs() {
                                 social media links on the right side of the
                                 page.
                             </p>
-                            <h2 className="text-2xl mb-6 font-bold text-white">
+                            <h2 className="text-2xl mb-6 font-bold">
                                 Introducing SuperBasket:
                             </h2>
                             <p className="text-gray-400 mb-6">
@@ -57,7 +57,7 @@ export function AboutUs() {
                                 with cloud collaboration.
                             </p>
 
-                            <h2 className="text-2xl mb-6 font-bold text-white">
+                            <h2 className="text-2xl mb-6 font-bold">
                                 ✨ Key Features:
                             </h2>
 
@@ -87,7 +87,7 @@ export function AboutUs() {
                                     </li>
                                 </div>
                             </ul>
-                            <h2 className="text-2xl mb-6 font-bold text-white">
+                            <h2 className="text-2xl mb-6 font-bold">
                                 👩‍💻 Tech Stack:
                             </h2>
                             <p className="text-gray-400 mb-6">
@@ -127,7 +127,7 @@ export function AboutUs() {
 
                             </p>
 
-                            <h2 className="text-2xl mb-6 font-bold text-white">
+                            <h2 className="text-2xl mb-6 font-bold">
                                 🌐 Join the SuperBasket Experience:
                             </h2>
                             <p className="text-gray-400 mb-6">

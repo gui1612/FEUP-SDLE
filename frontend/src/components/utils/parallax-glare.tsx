@@ -14,6 +14,7 @@ import {
     FaGlobe,
 } from "react-icons/fa";
 import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 
 const options = {
     scale: 1.105,
@@ -39,29 +40,29 @@ const LinkList = ({
 }: SocialProps) => (
     <div className={HoverGlareEffect.links}>
         {linkedin && (
-            <a href={linkedin} className={HoverGlareEffect.link}>
+            <Link to={linkedin} className={HoverGlareEffect.link}>
                 <FaLinkedin />
-            </a>
+            </Link>
         )}
         {github && (
-            <a href={github} className={HoverGlareEffect.link}>
+            <Link to={github} className={HoverGlareEffect.link}>
                 <FaGithubSquare />
-            </a>
+            </Link>
         )}
         {website && (
-            <a href={website} className={HoverGlareEffect.link}>
+            <Link to={website} className={HoverGlareEffect.link}>
                 <FaGlobe />
-            </a>
+            </Link>
         )}
         {instagram && (
-            <a href={instagram} className={HoverGlareEffect.link}>
+            <Link to={instagram} className={HoverGlareEffect.link}>
                 <FaInstagram />
-            </a>
+            </Link>
         )}
         {twitter && (
-            <a href={twitter} className={HoverGlareEffect.link}>
+            <Link to={twitter} className={HoverGlareEffect.link}>
                 <FaTwitter />
-            </a>
+            </Link>
         )}
     </div>
 );

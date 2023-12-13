@@ -23,7 +23,6 @@ export function AboutUs() {
             github: "https://github.com/jsousa02",
             imagePath: "/montes.jpg",
         },
-
     ];
 
     return (
@@ -34,30 +33,110 @@ export function AboutUs() {
                         <h1 className="text-3xl font-bold mb-6 text-center">
                             About Us
                         </h1>
-                        <div className="text-left text-lg">
-                            <p className="text-gray-400">
-                                We are a team of four students pursuing of
-                                Informatics Engineering at FEUP (Faculdade de
-                                Engenharia da Universidade do Porto). Our
-                                passion for music and technology has brought us
-                                together to develop a Lyric-based Search Engine
-                                for finding songs.
+                        <div className="text-left text-lg text-gray-400">
+                            <h2 className="text-2xl mb-6 font-bold text-white">
+                                About Us:
+                            </h2>
+                            <h2 className="text-1xl mb-1">
+                                🚀 Our team is made of three Informatics
+                                Engineering students from FEUP, passionate about
+                                tech and innovation.
+                            </h2>
+
+                            <p className="mb-6">
+                                In case you want to contact any of use, use the
+                                social media links on the right side of the
+                                page.
                             </p>
-                            <p className="text-gray-400 mt-8">
-                                Our project aims to aggregate various metadata
-                                regarding musical content, providing a
-                                centralized and rich data source for music
-                                enthusiasts. By allowing text-based querying
-                                with the aid of context-sensitive filters, our
-                                search engine makes it easy to explore the vast
-                                and unexplored world of lyrical and structural
-                                musical data.
+                            <h2 className="text-2xl mb-6 font-bold text-white">
+                                Introducing SuperBasket:
+                            </h2>
+                            <p className="text-gray-400 mb-6">
+                                🛒 SuperBasket is our brainchild—a revolutionary
+                                shopping list app blending local convenience
+                                with cloud collaboration.
                             </p>
-                            <p className="text-gray-400 mt-8">
-                                In its final stage, our search engine will be a
-                                fun and interactive way to interact and perceive
-                                music production and its history. Join us on
-                                this musical journey!
+
+                            <h2 className="text-2xl mb-6 font-bold text-white">
+                                ✨ Key Features:
+                            </h2>
+
+                            <ul className="mb-6 list-disc">
+                                <div className="ml-10">
+                                    <li className="mb-1">
+                                        📝 Create and personalize shopping lists
+                                        on
+                                        <b> any device</b>.
+                                    </li>
+                                    <li className="mb-1">
+                                        📡 Access lists locally, even{" "}
+                                        <b>without access to the internet</b>.
+                                    </li>
+                                    <li className="mb-1">
+                                        🤝 Share a unique ID with friends for
+                                        <b> real-time collaborative shopping</b>
+                                        .
+                                    </li>
+                                    <li className="mb-1">
+                                        🚩 Flag and set target quantities for
+                                        items.
+                                    </li>
+                                    <li className="mb-1">
+                                        🌐 Smart <b>cloud architecture</b> for{" "}
+                                        <b>millions of users</b>.
+                                    </li>
+                                </div>
+                            </ul>
+                            <h2 className="text-2xl mb-6 font-bold text-white">
+                                👩‍💻 Tech Stack:
+                            </h2>
+                            <p className="text-gray-400 mb-6">
+                                We are using a wide tech-stack with languages
+                                ranging from <b>Java</b> on the database to{" "}
+                                <b>Typescript</b> (and React) on the frontend
+                                and on the synchronization server. This project
+                                explores various concepts and technologies, such
+                                as:
+                                <ul className="mb-6 list-disc">
+                                    <div className="ml-10 mt-6">
+                                        <li className="mb-1">
+                                            <b>Local-first</b> architecture.
+                                        </li>
+                                        <li className="mb-1">
+                                            {" "}
+                                            <b>
+                                                Conflict-free Replicated Data
+                                                Types
+                                            </b>{" "}
+                                            (CRDTs).
+                                        </li>
+                                        <li className="mb-1">
+                                            <b>Real-time collaboration</b>.
+                                        </li>
+                                        <li className="mb-1">
+                                            <b>Offline-first</b> support.
+                                        </li>
+                                        <li className="mb-1">
+                                            <b>Cloud architecture</b>.
+                                        </li>
+                                        <li className="mb-1">
+                                            Many many others...
+                                        </li>
+                                    </div>
+                                </ul>
+
+                            </p>
+
+                            <h2 className="text-2xl mb-6 font-bold text-white">
+                                🌐 Join the SuperBasket Experience:
+                            </h2>
+                            <p className="text-gray-400 mb-6">
+                                Elevate your shopping routine with SuperBasket.
+                                Your local-first, cloud-collaborative shopping
+                                companion. Bringing the world together, one
+                                shopping list at a time. Ready to revolutionize
+                                your shopping experience? Welcome to
+                                SuperBasket! 🌟
                             </p>
                         </div>
                     </div>
@@ -65,7 +144,6 @@ export function AboutUs() {
                         <h1 className="text-3xl font-bold mb-4 text-center">
                             Developers
                         </h1>
-
                         <div className="flex flex-wrap justify-center">
                             {developers.map((developer, index) => (
                                 <ParallaxGlare

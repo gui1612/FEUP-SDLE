@@ -24,10 +24,10 @@ export function MainNav({
                                 <Link to="/">
                                     <Avatar className="h-8 w-8">
                                         <AvatarImage
-                                            src="/versevault-logo.png"
+                                            src="/sb-logo.png"
                                             alt="@shadcn"
                                         />
-                                        <AvatarFallback>VV</AvatarFallback>
+                                        <AvatarFallback>SB</AvatarFallback>
                                     </Avatar>
                                 </Link>
                             </div>
@@ -35,7 +35,7 @@ export function MainNav({
                                 to="/basket"
                                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
                             >
-                                ListHub
+                                SuperBasket
                             </Link>
                         </div>
 

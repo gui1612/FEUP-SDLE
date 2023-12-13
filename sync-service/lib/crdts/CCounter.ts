@@ -48,6 +48,8 @@ class CCounter<K> {
                 break;
             }
         }
+        
+        if (base + value < 0) throw new Error("Cannot decrement below 0");
 
         this.awset.add(base + value);
 
@@ -55,20 +57,7 @@ class CCounter<K> {
     }
 
     dec(value: number = 1): number {
-        let base = 0;
-
-        for (const entry of this.awset.dotSet) {
-            const [replicaValue, replicaId] = entry;
-            if (this.id === replicaId) {
-                base = Math.max(base, replicaValue);
-                this.awset.remove(replicaValue);
-                break;
-            }
-        }
-
-        if (base - value < 0) throw new Error("Cannot decrement below 0");
-
-        this.awset.add(base - value);
+        this.inc(-value);
 
         return this.values;
     }

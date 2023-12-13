@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import { ShoppingList } from "../models/ShoppingList";
-import { v4 as uuidv4 } from "uuid";
 import { version as uuidVersion } from "uuid";
 import { validate as uuidValidate } from "uuid";
-import { MultiItem, SingleItem } from "../models/Item";
 
 function uuidValidateV4(uuid: string): boolean {
     return uuidValidate(uuid) && uuidVersion(uuid) === 4;
@@ -27,48 +25,6 @@ function loadListFromMockDb(uuid: string): ShoppingList | undefined {
     return bufferToShoppingList(mockDB[uuid]);
 }
 
-function loadListsFromMockDb(): Record<string, ShoppingList> {
-    const res: Record<string, ShoppingList> = {};
-
-    for (const uuid in mockDB) {
-        const list = loadListFromMockDb(uuid);
-        if (!list) {
-            console.log("AWOOGA");
-
-            continue;
-        }
-        res[uuid] = loadListFromMockDb(uuid);
-    }
-
-    return res;
-}
-
-export const debug = (req: Request, res: Response) => {
-    res.json(
-        Object.fromEntries(
-            Object.entries(loadListsFromMockDb()).map(([uuid, list]) => [
-                uuid,
-                list.toJSON(),
-            ])
-        )
-    );
-};
-
-export const testFlow = (req: Request, res: Response) => {
-    const uuid = uuidv4();
-    const name = "test";
-
-    const shoppingList = ShoppingList.createEmptyList(uuid, name);
-
-    shoppingList.addItem("banana da madeira", "single");
-    (shoppingList.getItem("banana da madeira") as SingleItem).buyItem();
-
-    shoppingList.addItem("chocapics", "multi");
-    (shoppingList.getItem("chocapics") as MultiItem).buyItems(3);
-
-    res.json(shoppingList);
-};
-
 export const getList = (req: Request, res: Response) => {
     const uuid = req.params.uuid;
 
@@ -84,21 +40,18 @@ export const getList = (req: Request, res: Response) => {
     res.json(list);
 };
 
-export const createList = (req: Request, res: Response) => {
-    const uuid = uuidv4();
-    const name = req.body.name;
+export const putList = (req: Request, res: Response) => {
+    const uuid = req.params.uuid;
+    const name = req.body?.name;
 
-    if (mockDB[uuid])
-        return res.status(500).json({ error: `UUID ${uuid} already exists` });
+    const jsonList = req.body.list;
+    const crdt = ShoppingList.fromJSON(jsonList);
 
-    // if name already exists, return error
-    for (const buffer of Object.values(mockDB)) {
-        const list = bufferToShoppingList(buffer);
+    if (mockDB[uuid]) {
+        const prevCRDT = loadListFromMockDb(uuid);
+        saveListToMockDb(prevCRDT.merge(crdt), uuid);
 
-        if (list.name === name)
-            return res
-                .status(500)
-                .json({ error: `Name ${name} already exists` });
+        return res.json(mockDB[uuid]);
     }
 
     const shoppingList = ShoppingList.createEmptyList(uuid, name);
@@ -111,8 +64,10 @@ export const createList = (req: Request, res: Response) => {
 export const deleteList = (req: Request, res: Response) => {
     const uuid = req.params.uuid;
 
-    if (!uuidValidateV4(uuid))
+    // list not found
+    if (!uuidValidateV4(uuid)) {
         return res.status(400).json({ error: "Invalid UUID Format" });
+    }
 
     if (!mockDB[uuid])
         return res
@@ -122,14 +77,4 @@ export const deleteList = (req: Request, res: Response) => {
     delete mockDB[uuid];
 
     res.json({ success: `List with UUID ${uuid} deleted` });
-};
-
-export const updateList = (req: Request, res: Response) => {
-    const jsonList = req.body;
-    const crdt = ShoppingList.fromJSON(jsonList);
-
-    const prevCRDT = loadListFromMockDb(crdt.id);
-    saveListToMockDb(prevCRDT.merge(crdt), crdt.id);
-
-    res.json(mockDB[crdt.id]);
 };

@@ -38,16 +38,15 @@ class SingleItem  {
         return new SingleItem(id, this.bought);
     }
 
-    toJSON() : {
+    toJSON(): {
         type: "single";
         id: string;
         bought: ReturnType<EWFlag<string>["toJSON"]>;
     } {
-    //[string, ReturnType<EWFlag<string>["toJSON"]>]{
         return {
             type: "single",
-            id: this.id, 
-            bought: this.bought.toJSON()
+            id: this.id,
+            bought: this.bought.toJSON(),
         };
     }
 }
@@ -58,7 +57,11 @@ class MultiItem {
     private requestedItems: CCounter<string>;
     private boughtItems: CCounter<string>;
 
-    constructor(id: string, cartItems: CCounter<string>, boughtItems: CCounter<string>) {
+    constructor(
+        id: string,
+        cartItems: CCounter<string>,
+        boughtItems: CCounter<string>
+    ) {
         this.id = id;
         this.requestedItems = cartItems;
         this.boughtItems = boughtItems;
@@ -99,7 +102,7 @@ class MultiItem {
         return new MultiItem(id, this.requestedItems, this.boughtItems);
     }
 
-    toJSON() : {
+    toJSON(): {
         type: "multi";
         id: string;
         toBuy: ReturnType<CCounter<string>["toJSON"]>;
@@ -107,9 +110,9 @@ class MultiItem {
     } {
         return {
             type: "multi",
-            id: this.id, 
+            id: this.id,
             toBuy: this.requestedItems.toJSON(),
-            bought: this.boughtItems.toJSON()
+            bought: this.boughtItems.toJSON(),
         };
     }
 }

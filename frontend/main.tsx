@@ -15,6 +15,18 @@ import localforage from "localforage";
 import { Component as HomeRoute } from "./src/pages/home/route.tsx";
 import { Component as AboutRoute } from "./src/pages/about-us/route.tsx";
 import { Component as ShoppingListRoute } from "./src/pages/shopping-lists/route.tsx";
+import { downloadShoppingList, startSynchronization } from "@/src/lib/utils/db.ts";
+
+const queryClient = new QueryClient({
+    defaultOptions: {
+        mutations: {
+            networkMode: "always"
+        },
+        queries: {
+            networkMode: "always"
+        }
+    }
+});
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -26,7 +38,17 @@ const router = createBrowserRouter(
                     element={<AboutRoute />}
                 />
 
-                <Route path="/shopping-lists/:id" element={<ShoppingListRoute />} />
+                <Route
+                    path="/shopping-lists/:id"
+                    element={<ShoppingListRoute />}
+                    loader={async ({params}) => {
+                        const id = params.id;
+                        if (!id) throw new Error("No id provided");
+
+                        await downloadShoppingList(id, queryClient);
+                        return null;
+                    }}
+                />
             </Route>
         </>
     ),
@@ -40,16 +62,9 @@ const router = createBrowserRouter(
     
     await localforage.setDriver(localforage.INDEXEDDB);
     
-    const queryClient = new QueryClient({
-        defaultOptions: {
-            mutations: {
-                networkMode: "always"
-            },
-            queries: {
-                networkMode: "always"
-            }
-        }
-    });
+  
+
+    startSynchronization(queryClient);
     
     ReactDOM.createRoot(document.getElementById("root")!).render(
         <React.StrictMode>

@@ -3,8 +3,5 @@ import { ShoppingList } from "./shopping-list";
 
 export function Component() {
   const { id } = useParams();
-
-  if (!id) throw new Error("No id provided");
-  
-  return <ShoppingList listId={id} />;
+  return <ShoppingList listId={id!} />;
 }

@@ -59,7 +59,9 @@ export function ShoppingList({ listId }: { listId: string }) {
       <div className="mr-8">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">{shoppingList.name}</h1>
-          <CopyToClipboardButton/>
+          <div className="flex gap-2">
+            <CopyToClipboardButton/>
+          </div>
         </div>
 
         <form

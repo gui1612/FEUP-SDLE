@@ -3,9 +3,6 @@ import { AWORMap } from "../../lib/crdts/AWORMap";
 import { CCounter } from "../../lib/crdts/CCounter";
 import { EWFlag } from "../../lib/crdts/EWFlag";
 import { AWSet } from "../../lib/crdts/AWSet";
-import { AWSetHelper } from "../../lib/crdts/AWSetHelper";
-import { DotContext } from "../../lib/crdts/DotContext";
-import { log } from "console";
 
 suite("AWORMap", () => {
     test("constructor", () => {
@@ -121,16 +118,16 @@ suite("AWORMap", () => {
     test("chaining AWORMaps", () => {
         const aw = new AWORMap<
             number,
-            AWORMap<number, undefined, string>,
+            AWORMap<number, CCounter<string>, string>,
             string
         >("A");
-        const aw2 = new AWORMap<number, undefined, string>("B");
+        const aw2 = new AWORMap<number, CCounter<string>, string>("B");
         aw.set(1, aw2);
 
         expect(aw.get(1)).toEqual(new AWORMap("A"));
         // expect(aw.get(1)).toEqual(aw2);
 
-        const aw3 = new AWORMap<number, undefined, string>("C");
+        const aw3 = new AWORMap<number, CCounter<string>, string>("C");
 
         // @ts-expect-error TS is dumb, so it can't infer the type of aw2
         aw2.set(2, aw3);

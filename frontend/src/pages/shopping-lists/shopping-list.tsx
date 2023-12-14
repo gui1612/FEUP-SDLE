@@ -9,7 +9,7 @@ import { Button } from "@/src/components/ui/button";
 import { MultipleItemRow, SingleItemRow } from "./list-item";
 
 export function ShoppingList({ listId }: { listId: string }) {
-  const newProductFormRef = useRef<HTMLFormElement>(null);
+  const productNameRef = useRef<HTMLInputElement>(null);
   
   const queryClient = useQueryClient();
   const invalidateList = useCallback(() => {
@@ -65,21 +65,21 @@ export function ShoppingList({ listId }: { listId: string }) {
         </div>
 
         <form
-          ref={newProductFormRef}
           className="flex items-center gap-2"
           onSubmit={(ev) => {
             ev.preventDefault();
-            const fd = new FormData(newProductFormRef.current!);
+            const fd = new FormData(ev.currentTarget);
             const name = fd.get("name") as string;
             const type = fd.get("type") as "single" | "multi" | "";
 
             if (!name || !type || !shoppingList || !!shoppingList.getItem(name)) return;
-
+            
             addProductToList.mutate({ name, type });
-            newProductFormRef.current!.reset();
+            productNameRef.current!.value = "";
           }}
         >
           <Input
+            ref={productNameRef}
             type="text"
             name="name"
             placeholder="Enter product name"

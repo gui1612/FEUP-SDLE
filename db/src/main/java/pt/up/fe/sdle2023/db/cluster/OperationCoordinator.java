@@ -114,9 +114,9 @@ public class OperationCoordinator {
             .limit(replicationFactor)
             .collect(Collectors.groupingBy(node -> node.getHealthManager().isHealthy()));
 
-        var healthyReplicators = replicators.get(true);
+        var healthyReplicators = replicators.getOrDefault(true, List.of());
 
-        var unhealthyReplicators = replicators.get(false);
+        var unhealthyReplicators = replicators.getOrDefault(false, List.of());
         var hintedHandoffNodes = preferenceListForCoordinator.stream()
             .skip(replicationFactor)
             .filter(node -> node.getHealthManager().isHealthy())

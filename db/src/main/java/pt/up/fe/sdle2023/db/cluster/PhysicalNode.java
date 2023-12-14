@@ -32,6 +32,7 @@ public class PhysicalNode {
         return ManagedChannelBuilder.forAddress(host, port)
             .executor(GlobalExecutor.getExecutor())
             .disableRetry()
+            .usePlaintext()
             .build();
     }
 

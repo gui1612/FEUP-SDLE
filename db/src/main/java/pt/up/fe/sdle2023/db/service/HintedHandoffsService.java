@@ -8,6 +8,7 @@ import pt.up.fe.sdle2023.db.repository.RepositoryOperationFailedException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -28,7 +29,12 @@ public class HintedHandoffsService implements Runnable {
     public void run() {
         logger.info("Hinted handoffs service started");
 
+        var random = new Random();
+
         try {
+            var initialDelay = random.nextInt(5000);
+            Thread.sleep(initialDelay);
+
             while (true) {
                 try {
                     this.flushHintedHandoffs();
@@ -36,7 +42,8 @@ public class HintedHandoffsService implements Runnable {
                     logger.throwing(HintedHandoffsService.class.getName(), "run", e);
                 }
 
-                Thread.sleep(1000);
+                var nextDelay = random.nextGaussian(5000, 1000);
+                Thread.sleep(2500 + (int) nextDelay);
             }
         } catch (InterruptedException e) {
             logger.throwing(HintedHandoffsService.class.getName(), "run", e);

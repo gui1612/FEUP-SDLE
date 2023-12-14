@@ -131,17 +131,17 @@ public class QueryService extends QueryServiceGrpc.QueryServiceImplBase {
                 // Run as coordinator
                 try {
                     var requestVectorClock = vectorClockSerializer.fromProto(request.getContext().getVectorClock());
-                    requestVectorClock.incrementCounter(operationCoordinator.getCoordinatorNode().getToken());
+                    var newVectorClock = requestVectorClock.incrementCounter(operationCoordinator.getCoordinatorNode().getToken());
 
                     var newRequest = ServiceProtos.PutRequest.newBuilder(request)
                         .setContext(
                             ServiceProtos.Context.newBuilder()
-                                .setVectorClock(vectorClockSerializer.toProto(requestVectorClock))
+                                .setVectorClock(vectorClockSerializer.toProto(newVectorClock))
                                 .build()
                         )
                         .build();
 
-                    var responsesOptional = operationCoordinator.coordinatePut(preferenceList, request);
+                    var responsesOptional = operationCoordinator.coordinatePut(preferenceList, newRequest);
                     if (responsesOptional.isEmpty()) {
                         responseObserver.onError(
                             Status.ABORTED

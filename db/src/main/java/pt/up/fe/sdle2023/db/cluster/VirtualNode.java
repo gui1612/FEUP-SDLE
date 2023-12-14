@@ -8,6 +8,7 @@ public class VirtualNode {
     private final Token token;
 
     public VirtualNode(PhysicalNode physicalNode, Token token) {
+        this.physicalNode = physicalNode;
         this.token = token;
     }
 

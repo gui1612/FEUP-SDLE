@@ -16,7 +16,7 @@ function saveListToMockDb(list: ShoppingList, id?: string): void {
 }
 
 function bufferToShoppingList(buffer: Buffer): ShoppingList {
-    return ShoppingList.fromJSON(JSON.parse(buffer.toString("utf-8")));
+    return ShoppingList.fromJSON(JSON.parse(buffer.toString("utf-8")), "<server>");
 }
 
 function loadListFromMockDb(uuid: string): ShoppingList | undefined {
@@ -42,23 +42,28 @@ export const getList = (req: Request, res: Response) => {
 
 export const putList = (req: Request, res: Response) => {
     const uuid = req.params.uuid;
-    const name = req.body?.name;
 
-    const jsonList = req.body.list;
-    const crdt = ShoppingList.fromJSON(jsonList);
+    const jsonList = req.body;
+    console.log(JSON.stringify(jsonList, null, 2))
+    const crdt = ShoppingList.fromJSON(jsonList, "<server>");
+    console.log(JSON.stringify(crdt.toJSON(), null, 2))
 
     if (mockDB[uuid]) {
         const prevCRDT = loadListFromMockDb(uuid);
-        saveListToMockDb(prevCRDT.merge(crdt), uuid);
+        console.log(JSON.stringify(prevCRDT.toJSON(), null, 2))
+        const newCRDT = prevCRDT.merge(crdt);
 
-        return res.json(mockDB[uuid]);
+        console.log("merging...")
+        console.log(JSON.stringify(newCRDT.toJSON(), null, 2))
+
+        saveListToMockDb(newCRDT, uuid);
+
+        return res.json(newCRDT.toJSON());
     }
 
-    const shoppingList = ShoppingList.createEmptyList(uuid, name);
+    saveListToMockDb(crdt, crdt.id);
 
-    saveListToMockDb(shoppingList);
-
-    res.json(shoppingList);
+    res.json(crdt);
 };
 
 export const deleteList = (req: Request, res: Response) => {

@@ -63,7 +63,7 @@ class ShoppingList {
                 ? SingleItem.createItem(id)
                 : MultiItem.createItem(id);
         this.items.set(id, item);
-
+        console.log("dots on add", this.dots.toJSON())
         return this;
     }
 
@@ -81,8 +81,6 @@ class ShoppingList {
         return this;
     }
 
-
-
     merge(list: ShoppingList, deep = true): ShoppingList {
         if (!list) return this;
 
@@ -99,6 +97,7 @@ class ShoppingList {
         items: ReturnType<AWORMap<string, ListItem, string>["toJSON"]>;
         dots: ReturnType<DotContext<string>["toJSON"]>;
     } {
+        console.log("dots on toJSON", this.dots.toJSON())
         return {
             uuid: this.uuid,
             name: this.listName,
@@ -107,32 +106,32 @@ class ShoppingList {
         };
     }
 
-    static fromJSON(json: ReturnType<ShoppingList["toJSON"]>) {
+    static fromJSON(json: ReturnType<ShoppingList["toJSON"]>, userId: string) {
         const uuid = json.uuid;
         const listName = json.name;
+        console.log("dots on fromJSON", json.dots)
         const dots: DotContext<string> = new DotContext(new Map(Object.entries(json.dots)));
         const items: AWORMap<string, ListItem, string> = new AWORMap<
             string,
             ListItem,
             string
         >(
-            json.uuid,
-            undefined,
+            userId,
+            new Set(json.items.set),
             json.items.map.map(([id, item]) => [
                 id,
-
                 item.type === "multi"
                     ? new MultiItem(
                           id,
-                          new CCounter(item.toBuy.id, new Set(item.toBuy.awset), dots),
-                          new CCounter(item.bought.id, new Set(item.bought.awset), dots)
+                          new CCounter(userId, new Set(item.toBuy.awset), dots),
+                          new CCounter(userId, new Set(item.bought.awset), dots)
                       )
                     : new SingleItem(
                           id,
                           new EWFlag(item.bought.id, new Set(item.bought.awset), dots)
                       ),
             ]),
-            new DotContext()
+            dots
         );
 
         return new ShoppingList(uuid, listName, items, dots);

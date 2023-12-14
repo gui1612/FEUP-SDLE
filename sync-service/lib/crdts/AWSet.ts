@@ -1,5 +1,4 @@
 import { DotContext } from "./DotContext";
-import { union, intersection } from "ts-set-utils";
 
 // (Value, ID, Dot) -> P(E × I × N)
 type DotVal<K, T> = [K, T, number];
@@ -67,12 +66,52 @@ class AWSet<K, T> {
         return res;
     }
 
+    private intersection(first: DotSet<K, T>, second: DotSet<K, T>): DotSet<K, T> {
+        const res = new Set<DotVal<K, T>>();
+
+        for (const [value, id, dot] of first) {
+            let has = false;
+            for (const [value2, id2, dot2] of second) {
+                if (id === id2 && dot === dot2 && value == value2) {
+                    has = true;
+                    break;
+                }
+            }
+
+            if (has) res.add([value, id, dot]);
+        }
+
+        return res;
+    }
+    
+    private union(first: DotSet<K, T>, second: DotSet<K, T>): DotSet<K, T> {
+        const res = new Set<DotVal<K, T>>();
+
+        for (const [value, id, dot] of first) {
+            res.add([value, id, dot]);
+        }
+
+        for (const [value, id, dot] of second) {
+            let has = false;
+            for (const [value2, id2, dot2] of first) {
+                if (id === id2 && dot === dot2 && value == value2) {
+                    has = true;
+                    break;
+                }
+            }
+
+            if (!has) res.add([value, id, dot]);
+        }
+
+        return res;
+    }
+
     merge(aw: AWSet<K, T>, deep = true): Set<K> {
         const f1 = this.f(this.entrySet, aw.ctx);
         const f2 = this.f(aw.entrySet, this.ctx);
 
-        this.entrySet = union(
-            union(intersection(this.entrySet, aw.entrySet), f1),
+        this.entrySet = this.union(
+            this.union(this.intersection(this.entrySet, aw.entrySet), f1),
             f2
         );
 
@@ -81,10 +120,9 @@ class AWSet<K, T> {
         return this.values;
     }
 
-    toJSON(): DotVal<K, T>[]  {
-        return [...this.entrySet.values()]
+    toJSON(): DotVal<K, T>[] {
+        return [...this.entrySet.values()];
     }
-
 }
 
 export { AWSet };

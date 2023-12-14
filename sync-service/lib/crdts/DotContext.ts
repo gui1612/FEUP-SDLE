@@ -29,7 +29,7 @@ class DotContext<K> {
     hasDot(dot: Dot<K>): boolean {
         const [id, dotId] = dot;
 
-        return this.cc.has(id) && this.cc.get(id) === dotId;
+        return this.cc.has(id) && this.cc.get(id) >= dotId;
     }
 
     merge(dc: DotContext<K>): DotContext<K> {

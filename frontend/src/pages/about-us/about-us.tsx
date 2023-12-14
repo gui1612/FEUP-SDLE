@@ -20,7 +20,7 @@ export function AboutUs() {
         },
         {
             name: "Miguel Montes",
-            github: "https://github.com/jsousa02",
+            github: "https://github.com/MiguelLPMM",
             imagePath: "/montes.jpg",
         },
     ];

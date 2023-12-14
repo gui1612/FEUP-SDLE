@@ -73,7 +73,7 @@ export function ShoppingList({ listId }: { listId: string }) {
             const name = fd.get("name") as string;
             const type = fd.get("type") as "single" | "multi" | "";
 
-            if (!name || !type) return;
+            if (!name || !type || !shoppingList || !!shoppingList.getItem(name)) return;
 
             addProductToList.mutate({ name, type });
             newProductFormRef.current!.reset();
@@ -109,8 +109,8 @@ export function ShoppingList({ listId }: { listId: string }) {
 
               return (
                 item._type === "single"
-                  ? <SingleItemRow key={`${name}-${item.enabled}`} name={name} item={item} onChange={updateList.mutate} onDelete={removeItem}/>
-                  : <MultipleItemRow key={`${name}-${item.bought}-${item.requested}`} name={name} item={item} onChange={updateList.mutate} onDelete={removeItem} />
+                  ? <SingleItemRow key={`single-${name}-${item.enabled}`} name={name} item={item} onChange={updateList.mutate} onDelete={removeItem}/>
+                  : <MultipleItemRow key={`multiple-${name}-${item.bought}-${item.requested}`} name={name} item={item} onChange={updateList.mutate} onDelete={removeItem} />
               )
             }}
           />

@@ -37,12 +37,9 @@ class ShoppingList {
         return this.items;
     }
 
-    getItem(id: string): ListItem {
+    getItem(id: string): ListItem | null {
         const item = this.items.get(id);
-
-        if (!item) throw new Error(`Item with id ${id} not found`);
-
-        return item;
+        return item ?? null;
     }
 
     static createEmptyList(id: string, listName: string): ShoppingList {
@@ -128,7 +125,7 @@ class ShoppingList {
                       )
                     : new SingleItem(
                           id,
-                          new EWFlag(item.bought.id, new Set(item.bought.awset), dots)
+                          new EWFlag(userId, new Set(item.bought.awset), dots)
                       ),
             ]),
             dots

@@ -71,7 +71,7 @@ export async function downloadShoppingList(shoppingListId: string, queryClient: 
   try {
     if (!navigator.onLine) return !!mostRecentList;
 
-    const response = await fetch(`http://localhost:1234/list/${shoppingListId}`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/list/${shoppingListId}`, {
       method: !!mostRecentList ? "PUT" : "GET",
       headers: {
         "Content-Type": "application/json",
@@ -108,12 +108,13 @@ export async function startSynchronization(queryClient: QueryClient): Promise<vo
     for (const entry of entries) {
       const { id, synced } = entry;
       console.log({id, synced})
-      if (synced) continue;
+      // if (synced) continue;
 
-      const list = await localforage.getItem(`lists.${id}`) as ReturnType<ShoppingList["toJSON"]>;
+      const list = await localforage.getItem<ReturnType<ShoppingList["toJSON"]>>(`lists.${id}`);
+      if (!list) continue;
 
       try {
-        const response = await fetch(`http://localhost:1234/list/${list.uuid}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/list/${list.uuid}`, {
           method: "PUT",
           body: JSON.stringify(list),
           headers: {
@@ -123,7 +124,12 @@ export async function startSynchronization(queryClient: QueryClient): Promise<vo
 
         if (response.ok) {
           const updatedList = await response.json() as ReturnType<ShoppingList["toJSON"]>;
-          await localforage.setItem(`lists.${id}`, updatedList);
+          
+          const mostRecentList = await localforage.getItem<ReturnType<ShoppingList["toJSON"]>>(`lists.${id}`);
+          if (!mostRecentList) continue;
+
+          const mergedList = ShoppingList.fromJSON(mostRecentList, getUserId()).merge(ShoppingList.fromJSON(updatedList, getUserId()));
+          await localforage.setItem(`lists.${id}`, mergedList.toJSON());
 
           queryClient.invalidateQueries({
             queryKey: ["lists", id]
